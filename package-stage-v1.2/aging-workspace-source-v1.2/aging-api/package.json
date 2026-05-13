@@ -1,0 +1,33 @@
+{
+  "name": "aging-api",
+  "version": "1.2.0",
+  "description": "Pinetree Express AGING App - API server (Phase 2 v1.2)",
+  "type": "module",
+  "main": "dist/server.js",
+  "engines": {
+    "node": ">=20.10 <25"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "tsc && node scripts/copy-assets.mjs",
+    "copy-assets": "node scripts/copy-assets.mjs",
+    "serve": "node dist/server.js"
+  },
+  "keywords": [],
+  "author": "Pinetree Express",
+  "license": "ISC",
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/busboy": "^1.5.4",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,231 @@
+/* v2.3 C2 Statement Collection Workbench styles.
+ *
+ * Round 2 scope: page shell, No Due Date callout, tabs strip,
+ * tab totals area, empty/placeholder states.
+ * Color tokens follow v2.2 global.css conventions (slate neutrals,
+ * amber for attention, red for danger). Round 4 adds badge colors;
+ * Round 7 adds row highlights.
+ */
+
+.aging-report-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.aging-report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aging-report-header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aging-asof {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* No Due Date callout
+ *
+ * Amber-tinted attention banner. Placement: above the tabs.
+ * Not a popup. Always visible while items exist; hidden entirely
+ * when openCount === 0.
+ */
+.aging-no-due-date-callout {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-left-width: 4px;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  color: #78350f;
+}
+
+.aging-callout-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.aging-callout-totals {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.aging-callout-currency {
+  font-variant-numeric: tabular-nums;
+}
+
+.aging-callout-hint {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+/* Summary strip
+ *
+ * Three at-a-glance count cells. Click-through navigation to the
+ * relevant tab is a Round 5 nice-to-have; Round 2 renders static
+ * counts.
+ */
+.aging-summary-strip {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.aging-summary-cell {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.aging-summary-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.aging-summary-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tabs strip
+ *
+ * Segmented control style. Active tab gets a high-contrast pill.
+ * Inactive tabs are subdued slate. Keyboard focus visible.
+ */
+.aging-tabs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aging-tabs-strip {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0;
+}
+
+.aging-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: 0.95rem;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+}
+
+.aging-tab:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.aging-tab:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.aging-tab.is-active {
+  color: #0f172a;
+  background-color: #ffffff;
+  border-color: #e2e8f0 #e2e8f0 transparent #e2e8f0;
+  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+  margin-bottom: -1px;
+}
+
+.aging-tab-count {
+  display: inline-block;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.4rem;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.aging-tab.is-active .aging-tab-count {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Tab panel
+ *
+ * Body area beneath the tabs strip. Round 2 shows totals + empty
+ * or placeholder. Round 3 replaces placeholder with party rollup table.
+ */
+.aging-tab-panel {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+  background-color: #ffffff;
+}
+
+.aging-tab-totals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+}
+
+.aging-tab-totals-label {
+  font-weight: 600;
+  color: #475569;
+}
+
+.aging-tab-totals-cell {
+  font-variant-numeric: tabular-nums;
+  color: #1e293b;
+}
+
+.aging-tab-totals-count {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.aging-tab-empty,
+.aging-tab-placeholder {
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 4px;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.aging-tab-empty p,
+.aging-tab-placeholder p {
+  margin: 0;
+}

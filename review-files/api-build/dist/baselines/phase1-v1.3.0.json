@@ -1,0 +1,169 @@
+{
+    "specVersion": "1.3.0",
+    "schemaVersion": "1.0",
+    "parserVersion": "1.3.0",
+    "uploadSession": {
+        "importBatchId": "baseline-2026-05-01",
+        "timestamp": "2026-05-01T18:53:34.757Z",
+        "user": "baseline-demo",
+        "asOfDate": "2026-05-01",
+        "files": [
+            { "name": "1.INVOICE_JAN-APR 2026.xls", "type": "INVOICE", "recordCount": 384, "sizeBytes": 228390 },
+            { "name": "2.CRDR_JAN-APR 2026.xls", "type": "CRDR", "recordCount": 346, "sizeBytes": 148992 },
+            { "name": "3.AP_JAN-APR 2026.xls", "type": "AP", "recordCount": 500, "sizeBytes": 262144 },
+            { "name": "AGENT STATEMENT MAR 2026 -EXCEL FORM.xls", "type": "AGENT_STATEMENT", "recordCount": 85, "sizeBytes": 229376 },
+            { "name": "LOCAL STATEMENT MAR2026 CAD.xls", "type": "LOCAL_STATEMENT", "recordCount": 208, "sizeBytes": 1306675 },
+            { "name": "LOCAL STATEMENT MAR2026 USD.xls", "type": "LOCAL_STATEMENT", "recordCount": 41, "sizeBytes": 268509 }
+        ]
+    },
+    "classificationReport": [
+        { "file": "1.INVOICE_JAN-APR 2026.xls", "detectedType": "INVOICE", "confidence": 100, "rulesPassed": ["sheet_name", "col1_pattern", "column_count"], "sourceSheet": "Invoice List - Close Open", "requiresUserSelection": false },
+        { "file": "2.CRDR_JAN-APR 2026.xls", "detectedType": "CRDR", "confidence": 100, "rulesPassed": ["sheet_name", "col1_pattern", "column_count"], "sourceSheet": "CR DR List", "requiresUserSelection": false },
+        { "file": "3.AP_JAN-APR 2026.xls", "detectedType": "AP", "confidence": 100, "rulesPassed": ["sheet_name", "ap_heuristic", "column_count"], "sourceSheet": "Cost List - Close Open", "requiresUserSelection": false },
+        { "file": "AGENT STATEMENT MAR 2026 -EXCEL FORM.xls", "detectedType": "AGENT_STATEMENT", "confidence": 100, "rulesPassed": ["sheet_name", "agent_heuristic", "column_count"], "sourceSheet": "Sheet1", "requiresUserSelection": false },
+        { "file": "LOCAL STATEMENT MAR2026 CAD.xls", "detectedType": "LOCAL_STATEMENT", "confidence": 100, "rulesPassed": ["sheet_name", "local_heuristic", "column_count"], "sourceSheet": "Sheet1", "requiresUserSelection": false },
+        { "file": "LOCAL STATEMENT MAR2026 USD.xls", "detectedType": "LOCAL_STATEMENT", "confidence": 100, "rulesPassed": ["sheet_name", "local_heuristic", "column_count"], "sourceSheet": "Sheet1", "requiresUserSelection": false }
+    ],
+    "reconciliationReport": {
+        "INVOICE": {
+            "sourceRowCount": 442,
+            "parsedRowCount": 384,
+            "skippedRowCount": 58,
+            "rejectedRowCount": 0,
+            "sourceComputedTotal": 243001.65,
+            "parsedTotal": 243001.65,
+            "diff": 0,
+            "match": true,
+            "currencies": {
+                "CAD": { "count": 300, "source": 207586.50, "parsed": 207586.50, "diff": 0 },
+                "USD": { "count": 84, "source": 35415.15, "parsed": 35415.15, "diff": 0 }
+            }
+        },
+        "CRDR": {
+            "sourceRowCount": 346,
+            "parsedRowCount": 346,
+            "skippedRowCount": 0,
+            "rejectedRowCount": 0,
+            "sourceComputedTotal": 215544.96,
+            "parsedTotal": 215544.96,
+            "diff": 0,
+            "match": true,
+            "currencies": {
+                "CAD": { "count": 60, "source": 67911.50, "parsed": 67911.50, "diff": 0 },
+                "USD": { "count": 286, "source": 147633.46, "parsed": 147633.46, "diff": 0 }
+            }
+        },
+        "AP": {
+            "sourceRowCount": 500,
+            "parsedRowCount": 500,
+            "skippedRowCount": 0,
+            "rejectedRowCount": 0,
+            "sourceComputedTotal": 274369.69,
+            "parsedTotal": 274369.69,
+            "diff": 0,
+            "match": true,
+            "currencies": {
+                "CAD": { "count": 463, "source": 240370.69, "parsed": 240370.69, "diff": 0 },
+                "USD": { "count": 37, "source": 33999.00, "parsed": 33999.00, "diff": 0 }
+            }
+        }
+    },
+    "directionTotals": [
+        { "direction": "receivable", "currency": "CAD", "count": 186, "signedBalance": 307104.74, "absoluteBalance": 307104.74 },
+        { "direction": "payable", "currency": "CAD", "count": 213, "signedBalance": -275497.75, "absoluteBalance": 275497.75 },
+        { "direction": "receivable", "currency": "USD", "count": 166, "signedBalance": 187985.58, "absoluteBalance": 187985.58 },
+        { "direction": "payable", "currency": "USD", "count": 37, "signedBalance": -35415.65, "absoluteBalance": 35415.65 },
+        { "direction": "settled", "currency": "CAD", "count": 461, "signedBalance": 0, "absoluteBalance": 0 },
+        { "direction": "settled", "currency": "USD", "count": 167, "signedBalance": 0, "absoluteBalance": 0 }
+    ],
+    "zeroBalance": {
+        "totalCount": 628,
+        "totalPercent": 51.06,
+        "breakdown": [
+            { "type": "INVOICE", "currency": "CAD", "count": 226 },
+            { "type": "INVOICE", "currency": "USD", "count": 16 },
+            { "type": "CRDR", "currency": "USD", "count": 95 },
+            { "type": "CRDR", "currency": "CAD", "count": 40 },
+            { "type": "AP", "currency": "USD", "count": 56 },
+            { "type": "AP", "currency": "CAD", "count": 195 }
+        ]
+    },
+    "validationReport": {
+        "critical": [],
+        "warnings": [
+            { "rule": "W1", "message": "Exact duplicate candidates kept in parsed totals for review", "count": 80 },
+            { "rule": "W2", "message": "Companies with both USD and CAD (counted per company)", "count": 3 },
+            { "rule": "W6", "message": "AP negative balance flagged but parsed", "count": 14 }
+        ],
+        "info": [
+            { "rule": "I1", "message": "Aging greater than 90 days", "count": 161 },
+            { "rule": "I2", "message": "Due date before as-of date with non-zero balance", "count": 463 }
+        ]
+    },
+    "duplicateReview": {
+        "policy": "Phase 1 keeps exact duplicates in parsed totals and flags them for user review only. No automatic exclusion is applied.",
+        "groupCount": 40,
+        "transactionCount": 80,
+        "potentialSignedImpact": -70966.04,
+        "topGroups": [
+            { "identityKey": "AP|29422", "currency": "CAD", "count": 2, "potentialSignedImpact": -33968.76, "rows": ["AP:395", "AP:486"] },
+            { "identityKey": "AP|29467", "currency": "CAD", "count": 2, "potentialSignedImpact": -13319.04, "rows": ["AP:335", "AP:433"] },
+            { "identityKey": "AP|29429", "currency": "CAD", "count": 2, "potentialSignedImpact": -3815, "rows": ["AP:387", "AP:480"] },
+            { "identityKey": "AP|29445", "currency": "CAD", "count": 2, "potentialSignedImpact": -2689.7, "rows": ["AP:372", "AP:465"] },
+            { "identityKey": "AP|29448", "currency": "CAD", "count": 2, "potentialSignedImpact": -1530.55, "rows": ["AP:367", "AP:459"] },
+            { "identityKey": "AP|29468", "currency": "CAD", "count": 2, "potentialSignedImpact": -1300, "rows": ["AP:325", "AP:432"] },
+            { "identityKey": "AP|29410", "currency": "CAD", "count": 2, "potentialSignedImpact": -1229.66, "rows": ["AP:389", "AP:493"] },
+            { "identityKey": "AP|29892", "currency": "CAD", "count": 2, "potentialSignedImpact": -1127.99, "rows": ["AP:404", "AP:499"] },
+            { "identityKey": "AP|29491", "currency": "CAD", "count": 2, "potentialSignedImpact": -985, "rows": ["AP:320", "AP:410"] },
+            { "identityKey": "AP|29455", "currency": "CAD", "count": 2, "potentialSignedImpact": -877.83, "rows": ["AP:355", "AP:448"] }
+        ]
+    },
+    "skippedRows": [
+        { "sourceType": "INVOICE", "reason": "empty_customer_zero_balance", "count": 58 }
+    ],
+    "statementMatchReport": {
+        "agent": {
+            "statementCount": 33,
+            "transactionRefCount": 85,
+            "matchedCRDRRefs": 85,
+            "unmatchedCRDRRefs": 0,
+            "identityMismatches": 0,
+            "currentBalanceDifferences": 16,
+            "asOfDateMismatches": 16,
+            "settledInErpAfterStatement": 15,
+            "changedInErpAfterStatement": 1,
+            "currencies": {
+                "USD": 29,
+                "CAD": 4
+            }
+        },
+        "local": {
+            "statementCount": 249,
+            "transactionRefCount": 354,
+            "reconciliationErrors": 0,
+            "erpRefsFound": 259,
+            "exactSignedBalanceMatches": 162,
+            "balanceDifferences": 97,
+            "outsideUploadedErpDateRange": 67,
+            "sameRefDifferentCurrency": 20,
+            "rowsWithoutReferenceNumber": 10,
+            "notInUploadedErpExtract": 7,
+            "uploadedErpDateRange": { "from": "2026-01-01", "to": "2026-04-30" },
+            "currencies": {
+                "CAD": 208,
+                "USD": 41
+            }
+        }
+    },
+    "reviewCandidates": {
+        "local": [
+            { "party": "CEDRUS GLOBAL TRADING", "sourceFile": "LOCAL STATEMENT MAR2026 CAD.xls", "sourceRow": 1676, "invoiceDate": "2026-01-03", "ourRefNo": "PEAE008896", "invoiceNo": "ITC355043", "currency": "CAD", "balance": -691.56, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" },
+            { "party": "CEDRUS GLOBAL TRADING", "sourceFile": "LOCAL STATEMENT MAR2026 CAD.xls", "sourceRow": 1678, "invoiceDate": "2026-01-03", "ourRefNo": "PEAE008896", "invoiceNo": "ITC355044", "currency": "CAD", "balance": -691.56, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" },
+            { "party": "FEDEX FREIGHT CANADA", "sourceFile": "LOCAL STATEMENT MAR2026 CAD.xls", "sourceRow": 2459, "invoiceDate": "2026-02-25", "ourRefNo": "PEAE003106", "invoiceNo": "2-716-13843", "currency": "CAD", "balance": -276.85, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" },
+            { "party": "OLBERT METAL", "sourceFile": "LOCAL STATEMENT MAR2026 CAD.xls", "sourceRow": 6023, "invoiceDate": "2026-01-27", "ourRefNo": "PEOI009159", "invoiceNo": "PEIN018587", "currency": "CAD", "balance": 35, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" },
+            { "party": "S&J TRANSPORT", "sourceFile": "LOCAL STATEMENT MAR2026 CAD.xls", "sourceRow": 7050, "invoiceDate": "2026-01-05", "ourRefNo": "PEOI009180", "invoiceNo": "24465", "currency": "CAD", "balance": -100, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" },
+            { "party": "WIN YAN LOGISTICS", "sourceFile": "LOCAL STATEMENT MAR2026 CAD.xls", "sourceRow": 8894, "invoiceDate": "2026-01-31", "ourRefNo": "PEOI009210", "invoiceNo": "1760", "currency": "CAD", "balance": -725, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" },
+            { "party": "OLBERT METAL", "sourceFile": "LOCAL STATEMENT MAR2026 USD.xls", "sourceRow": 1386, "invoiceDate": "2026-01-27", "ourRefNo": "PEOI009158", "invoiceNo": "", "currency": "USD", "balance": 35, "differenceType": "NOT_IN_UPLOADED_ERP_EXTRACT" }
+        ]
+    }
+}

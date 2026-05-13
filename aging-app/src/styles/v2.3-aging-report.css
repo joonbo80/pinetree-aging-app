@@ -1,0 +1,882 @@
+/* v2.3 C2 Statement Collection Workbench styles.
+ *
+ * Round 2 scope: page shell, No Due Date callout, tabs strip,
+ * tab totals area, empty/placeholder states.
+ * Color tokens follow v2.2 global.css conventions (slate neutrals,
+ * amber for attention, red for danger). Round 4 adds badge colors;
+ * Round 7 adds row highlights.
+ */
+
+.aging-report-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.aging-report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aging-report-header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aging-asof {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+/* No Due Date callout
+ *
+ * Amber-tinted attention banner. Placement: above the tabs.
+ * Not a popup. Always visible while items exist; hidden entirely
+ * when openCount === 0.
+ */
+.aging-no-due-date-callout {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-left-width: 4px;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  color: #78350f;
+}
+
+.aging-callout-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.aging-callout-totals {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.aging-callout-currency {
+  font-variant-numeric: tabular-nums;
+}
+
+.aging-callout-hint {
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+/* Summary strip
+ *
+ * Three at-a-glance count cells. Click-through navigation to the
+ * relevant tab is a Round 5 nice-to-have; Round 2 renders static
+ * counts.
+ */
+.aging-summary-strip {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.aging-summary-cell {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.aging-summary-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.aging-summary-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Quick filters
+ *
+ * Round 5 keeps filters calm and shareable: URL params hold state,
+ * native date input controls asOfDate, and active filters render as
+ * small removable chips.
+ */
+.aging-filter-panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 0.875rem 1rem;
+}
+
+.aging-filter-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.aging-filter-title {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.aging-filter-subtitle {
+  color: #64748b;
+  margin-top: 0.125rem;
+  font-size: 0.82rem;
+}
+
+.aging-asof-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+  font-size: 0.82rem;
+}
+
+.aging-asof-control span {
+  font-weight: 650;
+}
+
+.aging-asof-control input {
+  color: #1e293b;
+  background: #fbfaf6;
+  border: 1px solid #d8d4c7;
+  border-radius: 4px;
+  min-height: 32px;
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+}
+
+.aging-asof-control input:focus-visible {
+  outline: 2px solid #94a3b8;
+  outline-offset: 2px;
+}
+
+.aging-filter-groups {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(240px, 1.15fr) minmax(360px, 2fr);
+  gap: 0.75rem;
+}
+
+.aging-filter-group-label {
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.375rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.aging-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.aging-filter-chip,
+.aging-active-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #475569;
+  background: #fbfaf6;
+  border: 1px solid #d8d4c7;
+  border-radius: 4px;
+  min-height: 30px;
+  padding: 0.24rem 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.aging-filter-chip:hover,
+.aging-active-filter-chip:hover {
+  color: #1e293b;
+  border-color: #94a3b8;
+  background: #ffffff;
+}
+
+.aging-filter-chip:focus-visible,
+.aging-active-filter-chip:focus-visible,
+.aging-clear-filters-btn:focus-visible {
+  outline: 2px solid #94a3b8;
+  outline-offset: 2px;
+}
+
+.aging-filter-chip.is-active {
+  color: #174c3a;
+  background: #eef7f1;
+  border-color: #9cc7aa;
+}
+
+.aging-filter-chip-dot {
+  background: #cbd5e1;
+  border-radius: 50%;
+  width: 0.42rem;
+  height: 0.42rem;
+}
+
+.aging-filter-chip.is-active .aging-filter-chip-dot {
+  background: #2d6e3e;
+}
+
+.aging-active-filter-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 0.875rem;
+  padding-top: 0.75rem;
+}
+
+.aging-active-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.aging-active-filter-chip {
+  color: #355c4a;
+  background: #f5faf6;
+  border-color: #bad4c2;
+}
+
+.aging-active-filter-empty {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+.aging-clear-filters-btn {
+  white-space: nowrap;
+  color: #475569;
+}
+
+.aging-export-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: -0.75rem;
+}
+
+.aging-export-btn {
+  color: #355c4a;
+  background: #f5faf6;
+  border-color: #bad4c2;
+  border-radius: 4px;
+  min-height: 32px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.aging-export-btn:hover:not(:disabled) {
+  color: #174c3a;
+  border-color: #8cb99c;
+  background: #eef7f1;
+}
+
+/* Tabs strip
+ *
+ * Segmented control style. Active tab gets a high-contrast pill.
+ * Inactive tabs are subdued slate. Keyboard focus visible.
+ */
+.aging-tabs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aging-tabs-strip {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0;
+}
+
+.aging-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: 0.95rem;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+}
+
+.aging-tab:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.aging-tab:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.aging-tab.is-active {
+  color: #0f172a;
+  background-color: #ffffff;
+  border-color: #e2e8f0 #e2e8f0 transparent #e2e8f0;
+  border-bottom: 2px solid #2563eb;
+  font-weight: 600;
+  margin-bottom: -1px;
+}
+
+.aging-tab-count {
+  display: inline-block;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.4rem;
+  background-color: #e2e8f0;
+  color: #1e293b;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.aging-tab.is-active .aging-tab-count {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Tab panel
+ *
+ * Body area beneath the tabs strip. Round 2 shows totals + empty
+ * or placeholder. Round 3 replaces placeholder with party rollup table.
+ */
+.aging-tab-panel {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-top: 0;
+  border-radius: 0 0 4px 4px;
+  background-color: #ffffff;
+}
+
+.aging-tab-totals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+}
+
+.aging-tab-totals-label {
+  font-weight: 600;
+  color: #475569;
+}
+
+/* Direction-split totals group.
+ * Each currency block shows AR and AP as separate cells, never netted.
+ * Rationale: a collector reading the workbench must distinguish
+ * "owed to us" from "we owe" at a glance.
+ */
+.aging-tab-totals-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+  border-left: 1px solid #f1f5f9;
+}
+
+.aging-tab-totals-group:first-of-type {
+  border-left: none;
+  padding-left: 0;
+}
+
+.aging-tab-totals-currency {
+  font-weight: 600;
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.aging-tab-totals-cell {
+  font-variant-numeric: tabular-nums;
+  color: #1e293b;
+}
+
+.aging-totals-receivable {
+  color: #166534;
+}
+
+.aging-totals-payable {
+  color: #b91c1c;
+}
+
+.aging-tab-totals-count {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.aging-tab-empty,
+.aging-tab-placeholder {
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 4px;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.aging-tab-empty p,
+.aging-tab-placeholder p {
+  margin: 0;
+}
+
+/* Dashboard entry point
+ *
+ * Round 3 cleanup: keep the workbench CTA as an independent block
+ * above the Aging Bucket panel instead of crowding the panel header.
+ */
+.dashboard-workbench-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid #d8d4c7;
+  background: #fbfaf6;
+}
+
+.dashboard-workbench-cta-title {
+  display: block;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.dashboard-workbench-cta-hint {
+  display: block;
+  margin-top: 0.125rem;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Party rollup table
+ *
+ * Round 3 replaces the placeholder with a dense accounting table.
+ * Rows expand in place; the persistent action system remains deferred.
+ */
+.aging-rollup-table-wrap {
+  overflow-x: auto;
+}
+
+.aging-rollup-table,
+.aging-transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.aging-rollup-table th,
+.aging-rollup-table td,
+.aging-transaction-table th,
+.aging-transaction-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.aging-rollup-table th,
+.aging-transaction-table th {
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #f8fafc;
+}
+
+.aging-rollup-table .num,
+.aging-transaction-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.aging-rollup-row:hover td {
+  background: #f8fafc;
+}
+
+.aging-rollup-toggle-col {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.aging-row-toggle,
+.aging-party-name-btn {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.aging-row-toggle {
+  min-width: 1.5rem;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-weight: 700;
+}
+
+.aging-row-toggle:focus-visible,
+.aging-party-name-btn:focus-visible,
+.aging-party-open-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.aging-party-name-btn {
+  font-weight: 600;
+  text-align: left;
+}
+
+.aging-party-name-btn:hover {
+  text-decoration: underline;
+}
+
+.aging-party-key {
+  margin-top: 0.125rem;
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.aging-signal-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.375rem;
+}
+
+.aging-signal-chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 3px;
+  padding: 0.12rem 0.42rem;
+  border: 1px solid transparent;
+  font-size: 0.66rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.aging-signal-chip.statement-diff {
+  color: #8a4b12;
+  background: #fff6e6;
+  border-color: #edc87f;
+}
+
+.aging-signal-chip.high-amount {
+  color: #1d5f78;
+  background: #edf8fb;
+  border-color: #a9d8e4;
+}
+
+.aging-signal-chip.ninety-plus,
+.aging-signal-chip.missing-due-date {
+  color: #8f2f2f;
+  background: #fff0ee;
+  border-color: #e9b9b2;
+}
+
+.aging-signal-chip.duplicate {
+  color: #66502a;
+  background: #f7f2e8;
+  border-color: #d8c9a9;
+}
+
+.aging-direction-pill,
+.aging-badge,
+.aging-ninety-chip,
+.aging-mini-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 5px;
+  padding: 0.14rem 0.48rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.aging-mini-badge {
+  padding: 0.1rem 0.38rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.aging-direction-pill.receivable {
+  color: #1d6a45;
+  background: #e8f5ed;
+}
+
+.aging-direction-pill.payable {
+  color: #93403b;
+  background: #f8e9e6;
+}
+
+.aging-direction-pill.settled {
+  color: #475569;
+  background: #edf0f3;
+}
+
+.aging-badge.statement-ExactMatch,
+.aging-badge.readiness-ReadyToFollowUp,
+.aging-badge.priority-cleared {
+  color: #1d6a45;
+  background: #e8f5ed;
+}
+
+.aging-badge.statement-BalanceDifference,
+.aging-badge.statement-SettledAfterStatement,
+.aging-badge.readiness-ReviewStatementDifference,
+.aging-badge.readiness-CheckDuplicate,
+.aging-badge.priority-follow-up {
+  color: #8a4b12;
+  background: #fff3d8;
+}
+
+.aging-badge.statement-NoStatement,
+.aging-badge.readiness-MissingDueDate,
+.aging-badge.priority-review-first {
+  color: #8f2f2f;
+  background: #f8e9e6;
+}
+
+.aging-badge.readiness-Cleared,
+.aging-badge.priority-monitor,
+.aging-mini-badge.readiness-Cleared {
+  color: #475569;
+  background: #edf0f3;
+}
+
+.aging-mini-badge.statement-ExactMatch,
+.aging-mini-badge.readiness-ReadyToFollowUp {
+  color: #1d6a45;
+  background: #e8f5ed;
+}
+
+.aging-mini-badge.statement-BalanceDifference,
+.aging-mini-badge.statement-SettledAfterStatement,
+.aging-mini-badge.readiness-ReviewStatementDifference,
+.aging-mini-badge.readiness-CheckDuplicate {
+  color: #8a4b12;
+  background: #fff3d8;
+}
+
+.aging-mini-badge.statement-NoStatement,
+.aging-mini-badge.readiness-MissingDueDate {
+  color: #8f2f2f;
+  background: #f8e9e6;
+}
+
+.aging-ninety-chip {
+  margin-left: 0.375rem;
+  color: #8f2f2f;
+  background: #fff0ee;
+  font-size: 0.66rem;
+}
+
+.aging-rollup-row.signal-statement-diff > td:first-child,
+.aging-transaction-row.signal-statement-diff > td:first-child {
+  border-left: 3px solid #d98b2b;
+}
+
+.aging-rollup-row.signal-statement-diff > td {
+  background: #fffcf6;
+}
+
+.aging-rollup-row.signal-high-amount > td {
+  box-shadow: inset 0 1px 0 #d8edf3, inset 0 -1px 0 #d8edf3;
+}
+
+.aging-rollup-row.signal-ninety-plus > td {
+  background-image: linear-gradient(90deg, rgba(255, 240, 238, 0.75), transparent 32%);
+}
+
+.aging-rollup-row.signal-duplicate > td:first-child,
+.aging-transaction-row.signal-duplicate > td:first-child {
+  border-left: 3px solid #a98b56;
+}
+
+.aging-rollup-row.signal-missing-due-date > td:first-child,
+.aging-transaction-row.signal-missing-due-date > td:first-child {
+  border-left: 3px solid #bf4b43;
+}
+
+.aging-transaction-row.signal-statement-diff > td {
+  background: #fffcf6;
+}
+
+.aging-rollup-detail-row > td {
+  padding: 0;
+  background: #f8fafc;
+}
+
+.aging-transaction-panel {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.aging-transaction-table {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.aging-transaction-aging {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.aging-transaction-aging small {
+  color: #64748b;
+}
+
+.aging-transaction-source {
+  color: #64748b;
+  font-size: 0.75rem;
+  word-break: break-word;
+}
+
+.aging-rollup-empty {
+  padding: 0.75rem 1rem;
+  color: #64748b;
+}
+
+/* Overdue aging bucket breakdown
+ *
+ * Round 7 scope: read-only overdue summary, placed above the party
+ * rollup table. The component preserves currency and AR/AP separation.
+ */
+.aging-bucket-breakdown {
+  margin: 0.75rem 0 0.875rem;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  background: #fbfaf6;
+}
+
+.aging-bucket-breakdown-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.625rem;
+}
+
+.aging-bucket-breakdown-title {
+  color: #1e293b;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.aging-bucket-breakdown-hint {
+  color: #64748b;
+  font-size: 0.74rem;
+}
+
+.aging-bucket-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.aging-bucket-cell {
+  min-width: 0;
+  padding: 0.625rem;
+  border: 1px solid #e5e1d4;
+  border-radius: 5px;
+  background: #ffffff;
+}
+
+.aging-bucket-key {
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.aging-bucket-count {
+  margin-top: 0.15rem;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.aging-bucket-totals {
+  display: grid;
+  gap: 0.14rem;
+  margin-top: 0.45rem;
+  color: #475569;
+  font-size: 0.71rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (width <= 760px) {
+  .dashboard-workbench-cta,
+  .aging-summary-strip,
+  .aging-filter-panel-head,
+  .aging-active-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aging-filter-groups {
+    grid-template-columns: 1fr;
+  }
+
+  .aging-export-actions {
+    justify-content: stretch;
+  }
+
+  .aging-export-btn {
+    flex: 1;
+  }
+
+  .aging-bucket-breakdown-head {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .aging-bucket-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aging-tab-totals-count {
+    margin-left: 0;
+  }
+}

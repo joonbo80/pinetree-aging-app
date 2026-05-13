@@ -1,0 +1,36 @@
+# index.html Round 2 patches
+
+Apply this patch to your mainline aging-app/index.html to register
+the new C2 stylesheet.
+
+## Patch - Add stylesheet link
+
+Find the existing stylesheet links in <head>. v2.2 mainline already
+includes the global stylesheet (and likely v2.2 dashboard styles).
+
+Add a new <link> for the C2 stylesheet, AFTER any existing v2.2
+stylesheet links so the C2 rules can override or augment them:
+
+```html
+<link rel="stylesheet" href="/src/styles/v2.3-aging-report.css" />
+```
+
+If your build pipeline imports CSS via JavaScript instead of HTML
+<link>, instead add this import at the top of AgingReportPage.tsx:
+
+```typescript
+import '../styles/v2.3-aging-report.css';
+```
+
+Either path works. Pick the one consistent with how your mainline
+loads other component stylesheets (e.g. dashboard.css, party-detail.css).
+
+## Verification
+
+After applying:
+
+1. `npm.cmd run build` succeeds.
+2. Dev server serves the new stylesheet without 404.
+3. /aging page renders with styled callout, summary strip, tabs.
+4. Round 2 invariants (inv-aging-ui-css-load) confirm the stylesheet
+   path is referenced in either index.html OR AgingReportPage.tsx.

@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>C2 Round 4 Visual Preview</title>
+  <link rel="stylesheet" href="../aging-app/src/styles/v2.3-aging-report.css" />
+  <style>
+    body { margin: 0; background: #f6f5f1; color: #1a1a1a; font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, sans-serif; }
+    .preview-shell { max-width: 1380px; margin: 0 auto; padding: 24px 32px 48px; }
+    .preview-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 18px; }
+    .preview-eyebrow { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #8a8674; text-transform: uppercase; letter-spacing: .08em; font-size: 11px; }
+    .preview-title { margin: 4px 0 0; font-size: 24px; letter-spacing: -0.01em; }
+    .preview-note { color: #64748b; font-size: 13px; }
+    .aging-tab-panel { border-top: 1px solid #e2e8f0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <main class="preview-shell">
+    <section class="preview-header">
+      <div>
+        <div class="preview-eyebrow">Round 4 visual preview</div>
+        <h1 class="preview-title">Statement Collection Workbench</h1>
+      </div>
+      <div class="preview-note">Muted chips + thin rails, based on real overdue rollups</div>
+    </section>
+    <div class="aging-no-due-date-callout">
+      <div class="aging-callout-title">No Due Date Review</div>
+      <div class="aging-callout-totals"><span class="aging-callout-currency">118 open items</span><span class="aging-callout-currency">Requires review before follow-up</span></div>
+      <div class="aging-callout-hint">Pinned separately so missing due dates do not disappear into Current or Overdue.</div>
+    </div>
+    <div class="aging-tabs-container" style="margin-top:16px">
+      <div class="aging-tabs-strip">
+        <button class="aging-tab">Current <span class="aging-tab-count">21</span></button>
+        <button class="aging-tab is-active">Overdue <span class="aging-tab-count">463</span></button>
+        <button class="aging-tab">Cleared <span class="aging-tab-count">628</span></button>
+      </div>
+      <div class="aging-tab-panel">
+        <div class="aging-tab-totals"><span class="aging-tab-totals-label">Overdue rollups</span><span class="aging-tab-totals-count">Top 9 party/currency/direction rows</span></div>
+        <div class="aging-rollup-table-wrap">
+          <table class="aging-rollup-table">
+            <thead><tr><th class="aging-rollup-toggle-col">Details</th><th>Party</th><th>Currency</th><th>Direction</th><th class="num">Amount</th><th class="num">Invoices</th><th class="num">Oldest</th><th>Statement</th><th>Readiness</th><th>Priority</th><th>Action</th></tr></thead>
+            <tbody>
+<tr class="aging-rollup-row priority-review-first signal-statement-diff signal-high-amount signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">IATA CARGO ACCOUNTS</button>
+    <div class="aging-party-key mono">iata-cargo-accounts</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip statement-diff">Statement Diff</span><span class="aging-signal-chip duplicate">Duplicate</span><span class="aging-signal-chip high-amount">High Amount</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-164,118.16</span></td>
+  <td class="num">42</td>
+  <td class="num">52d</td>
+  <td><span class="aging-badge statement-BalanceDifference">Balance Difference</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-statement-diff signal-high-amount">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">SKYMASTER EXPRESS</button>
+    <div class="aging-party-key mono">skymaster-express</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip statement-diff">Statement Diff</span><span class="aging-signal-chip high-amount">High Amount</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill receivable">Receivable</span></td>
+  <td class="num"><span class="amount-pos">81,145.02</span></td>
+  <td class="num">38</td>
+  <td class="num">64d</td>
+  <td><span class="aging-badge statement-BalanceDifference">Balance Difference</span></td>
+  <td><span class="aging-badge readiness-ReviewStatementDifference">Review Statement Difference</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-high-amount signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">WIN YAN LOGISTICS</button>
+    <div class="aging-party-key mono">win-yan-logistics</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip duplicate">Duplicate</span><span class="aging-signal-chip high-amount">High Amount</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-24,875.00</span></td>
+  <td class="num">32</td>
+  <td class="num">30d</td>
+  <td><span class="aging-badge statement-NoStatement">No Statement</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-statement-diff signal-high-amount">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">GLOMC AIR &SEA</button>
+    <div class="aging-party-key mono">glomc-air-sea</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip statement-diff">Statement Diff</span><span class="aging-signal-chip high-amount">High Amount</span></div>
+  </td>
+  <td class="mono">USD</td>
+  <td><span class="aging-direction-pill receivable">Receivable</span></td>
+  <td class="num"><span class="amount-pos">23,924.96</span></td>
+  <td class="num">4</td>
+  <td class="num">51d</td>
+  <td><span class="aging-badge statement-BalanceDifference">Balance Difference</span></td>
+  <td><span class="aging-badge readiness-ReviewStatementDifference">Review Statement Difference</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-high-amount signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">CEDRUS GLOBAL TRADING</button>
+    <div class="aging-party-key mono">cedrus-global-trading</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip duplicate">Duplicate</span><span class="aging-signal-chip high-amount">High Amount</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-10,876.71</span></td>
+  <td class="num">7</td>
+  <td class="num">50d</td>
+  <td><span class="aging-badge statement-NoStatement">No Statement</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">UNITED RELIABLE TRANSPORT</button>
+    <div class="aging-party-key mono">united-reliable-transport</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip duplicate">Duplicate</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-8,577.20</span></td>
+  <td class="num">5</td>
+  <td class="num">44d</td>
+  <td><span class="aging-badge statement-NoStatement">No Statement</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">KHUMAN & KHUMAN CARRIER</button>
+    <div class="aging-party-key mono">khuman-khuman-carrier</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip duplicate">Duplicate</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-7,981.50</span></td>
+  <td class="num">9</td>
+  <td class="num">39d</td>
+  <td><span class="aging-badge statement-NoStatement">No Statement</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">RRPLETT TRUCKING</button>
+    <div class="aging-party-key mono">rrplett-trucking</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip duplicate">Duplicate</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-7,630.00</span></td>
+  <td class="num">2</td>
+  <td class="num">56d</td>
+  <td><span class="aging-badge statement-NoStatement">No Statement</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr>
+<tr class="aging-rollup-row priority-review-first signal-duplicate">
+  <td class="aging-rollup-toggle-col"><button class="aging-row-toggle">&gt;</button></td>
+  <td>
+    <button class="aging-party-name-btn">OCTS - OVERLAND CONTAINER</button>
+    <div class="aging-party-key mono">octs-overland-container</div>
+    <div class="aging-signal-cluster"><span class="aging-signal-chip duplicate">Duplicate</span></div>
+  </td>
+  <td class="mono">CAD</td>
+  <td><span class="aging-direction-pill payable">Payable</span></td>
+  <td class="num"><span class="amount-neg">-6,122.20</span></td>
+  <td class="num">4</td>
+  <td class="num">45d</td>
+  <td><span class="aging-badge statement-NoStatement">No Statement</span></td>
+  <td><span class="aging-badge readiness-CheckDuplicate">Check Duplicate</span></td>
+  <td><span class="aging-badge priority-review-first">Review First</span></td>
+  <td><button class="btn btn-ghost aging-party-open-btn">Open Party Detail</button></td>
+</tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

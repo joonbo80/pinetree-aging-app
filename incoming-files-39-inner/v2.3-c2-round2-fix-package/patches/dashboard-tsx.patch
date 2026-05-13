@@ -1,0 +1,109 @@
+# Dashboard.tsx Round 2 patches
+
+Apply these str_replace patches to your mainline Dashboard.tsx. They
+add an Open Collection Workbench entry point near the existing Aging
+Bucket panel.
+
+## Patch 1 - Add onOpenAging to DashboardProps interface
+
+Find the DashboardProps interface. It should look approximately like:
+
+```typescript
+interface DashboardProps {
+  lang: Lang;
+  result: ParsingPreviewResult | null;
+  onBackToUpload: () => void;
+  onOpenReview: () => void;
+  onOpenReviewCategory: (category: ReviewRoute) => void;
+  onOpenParty?: (partyKey: string) => void;
+  detailsNotice?: string | null;
+}
+```
+
+Add a new optional prop, immediately below onOpenParty:
+
+```typescript
+  /**
+   * v2.3 C2: navigate to /aging when the Open Collection Workbench
+   * button is clicked. Follows the existing onOpenReview /
+   * onOpenParty callback pattern so Dashboard remains
+   * router-agnostic.
+   */
+  onOpenAging?: () => void;
+```
+
+## Patch 2 - Destructure onOpenAging in component signature
+
+Find the destructuring in the Dashboard function declaration:
+
+```typescript
+export function Dashboard({
+  result,
+  onBackToUpload,
+  onOpenReview,
+  onOpenReviewCategory,
+  onOpenParty,
+  detailsNotice,
+}: DashboardProps) {
+```
+
+Add onOpenAging to the destructuring list:
+
+```typescript
+export function Dashboard({
+  result,
+  onBackToUpload,
+  onOpenReview,
+  onOpenReviewCategory,
+  onOpenParty,
+  onOpenAging,
+  detailsNotice,
+}: DashboardProps) {
+```
+
+## Patch 3 - Add Open Collection Workbench button
+
+Find the section that renders the Aging Bucket panel. In v2.2 it
+typically follows a header like "Aging Buckets" or similar. The
+exact wrapping element may be a <section className="aging-buckets">
+or similar.
+
+Add a new button block immediately above the aging-buckets section
+(so the workbench entry sits at the top of the aging-related area),
+OR adjacent to it as a sibling. Either placement satisfies the
+Round 2 invariant.
+
+Recommended block:
+
+```tsx
+{onOpenAging && (
+  <div className="dashboard-workbench-cta">
+    <button
+      type="button"
+      className="btn btn-primary"
+      onClick={onOpenAging}
+    >
+      Open Collection Workbench
+    </button>
+    <span className="dashboard-workbench-cta-hint">
+      Statement Collection Workbench: prioritized view of overdue
+      receivables, statement mismatches, and items needing follow-up.
+    </span>
+  </div>
+)}
+```
+
+The {onOpenAging && (...)} guard means Dashboard renders cleanly
+in environments where the prop is not provided (e.g. legacy tests
+or future composition layers).
+
+## Verification
+
+After applying these three patches:
+
+1. Dashboard.tsx compiles without TypeScript errors.
+2. The /dashboard route shows an "Open Collection Workbench" button
+   (because App.tsx now passes the onOpenAging prop).
+3. Clicking the button navigates to /aging.
+4. Round 2 invariants:
+   `node --experimental-strip-types .\tools\test-aging-report-ui.mjs`

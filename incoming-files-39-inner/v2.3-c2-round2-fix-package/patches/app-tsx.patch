@@ -1,0 +1,104 @@
+# App.tsx Round 2 patches
+
+Apply these str_replace patches to your mainline App.tsx. Each is a
+small additive change; no existing line is removed except where
+required to add the new import / new route.
+
+The patches assume your mainline matches the state confirmed in the
+Round 2 kickoff (v2.2 + C1 + C2 Round 1 absorbed):
+
+- /dashboard route exists, wired to Dashboard
+- /party/:partyKey wired to PartyDetailPage
+- /review and /review/:type wired to ReviewQueuePage
+- / wired to upload/preview view
+
+If your mainline differs from this state, apply manually rather than
+running the patches blindly.
+
+## Patch 1 - Add import for AgingReportPage
+
+Find this block (existing imports for pages and components):
+
+```typescript
+import { ReviewQueuePage } from './components/review/ReviewQueuePage';
+```
+
+Add immediately after it:
+
+```typescript
+import { AgingReportPage } from './pages/AgingReportPage';
+```
+
+If your mainline already imports PartyDetailPage from './components/party/PartyDetailPage'
+on the line above, put the new import on a fresh line after that one.
+Order does not matter for compilation; cluster page imports together.
+
+## Patch 2 - Add /aging route inside <Routes>
+
+Find your existing Routes block. It should contain (in some order):
+
+```tsx
+<Route path="/dashboard" element={...} />
+<Route path="/review" element={<ReviewQueuePage result={result} />} />
+<Route path="/review/:type" element={<ReviewQueuePage result={result} />} />
+<Route path="/party/:partyKey" element={<PartyDetailPage result={result} />} />
+<Route path="/" element={...} />
+```
+
+Add a new <Route> entry for /aging. Recommended position: after
+/party/:partyKey and before /, so all named routes precede the
+catch-all root route:
+
+```tsx
+<Route
+  path="/aging"
+  element={(
+    <AgingReportPage
+      result={result}
+      onBackToDashboard={() => navigate('/dashboard')}
+    />
+  )}
+/>
+```
+
+## Patch 3 - Add onOpenAging prop to Dashboard usage
+
+Find your existing Dashboard route inside <Routes>:
+
+```tsx
+<Route
+  path="/dashboard"
+  element={(
+    <Dashboard
+      lang={lang}
+      result={result}
+      onBackToUpload={() => navigate('/')}
+      onOpenReview={...}
+      onOpenReviewCategory={openReviewRoute}
+      onOpenParty={(partyKey) => navigate(`/party/${partyKey}`)}
+      detailsNotice={detailsNotice}
+    />
+  )}
+/>
+```
+
+Add an onOpenAging prop pointing to /aging. Place it on its own line
+in the props list, near onOpenParty:
+
+```tsx
+onOpenAging={() => navigate('/aging')}
+```
+
+The resulting Dashboard element should include all existing props
+plus onOpenAging.
+
+## Verification
+
+After applying these three patches:
+
+1. `npm.cmd run build` should succeed.
+2. The dev server should serve /aging as the AgingReportPage component.
+3. The dashboard should show an "Open Collection Workbench" button
+   (added by Dashboard.tsx patches in dashboard-tsx.patch).
+4. Round 2 invariants should pass (`node --experimental-strip-types
+   .\tools\test-aging-report-ui.mjs`).

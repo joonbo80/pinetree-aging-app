@@ -1,0 +1,11 @@
+{
+  "name": "pinetree-aging-parsing-engine",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run-tests.mjs",
+    "parse:samples": "node tools/parse-samples.mjs",
+    "audit": "node tools/build-audit-report.mjs"
+  }
+}

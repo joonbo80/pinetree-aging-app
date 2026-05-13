@@ -1,0 +1,285 @@
+{
+  "pilot_date": "2026-05-05",
+  "baseline_period": "JAN-APR 2026",
+  "pilot_period": "MAY 1-5 2026 (week 1, business days only)",
+  "CRITICAL_schema_difference": {
+    "INVOICE": {
+      "baseline_cols": 26,
+      "pilot_cols": 26,
+      "match": true
+    },
+    "CRDR": {
+      "baseline_cols": 19,
+      "pilot_cols": 15,
+      "match": false
+    },
+    "AP": {
+      "baseline_cols": 25,
+      "pilot_cols": 25,
+      "match": true
+    }
+  },
+  "sources_analyzed": {
+    "INVOICE": {
+      "baseline_rows": 442,
+      "pilot_rows": 17,
+      "schema_compat": true,
+      "internalId_col": 25,
+      "baseline_id_range": [
+        16822,
+        17359
+      ],
+      "pilot_id_range": [
+        17360,
+        17377
+      ],
+      "business_id_range_baseline": [
+        "PEIN018738",
+        "PEIN019479"
+      ],
+      "business_id_range_pilot": [
+        "PEIN019480",
+        "PEIN019500"
+      ],
+      "internalId_overlap_count": 0,
+      "businessId_overlap_count": 0,
+      "date_range_baseline": [
+        "2026-01-01",
+        "2026-04-30"
+      ],
+      "date_range_pilot": [
+        "2026-05-01",
+        "2026-05-05"
+      ]
+    },
+    "CRDR": {
+      "baseline_rows": 346,
+      "pilot_rows": 7,
+      "schema_compat": false,
+      "schema_note": "baseline=19cols, pilot=15cols. internalId col DIFFERS (baseline col 18 vs pilot col 14). v2.4 parser must detect column count and adapt.",
+      "baseline_id_range": [
+        13622,
+        14116
+      ],
+      "pilot_id_range": [
+        26061,
+        26075
+      ],
+      "internalId_overlap_count": 0,
+      "date_range_baseline": [
+        "2026-01-01",
+        "2026-04-30"
+      ],
+      "date_range_pilot": [
+        "2026-05-01",
+        "2026-05-05"
+      ]
+    },
+    "AP": {
+      "baseline_rows": 500,
+      "pilot_rows": 41,
+      "schema_compat": true,
+      "internalId_col": 24,
+      "baseline_id_range": [
+        29398,
+        29944
+      ],
+      "pilot_id_range": [
+        29945,
+        29989
+      ],
+      "internalId_overlap_count": 0,
+      "date_range_baseline": [
+        "2026-03-04",
+        "2026-04-30"
+      ],
+      "date_range_pilot": [
+        "2026-05-01",
+        "2026-05-05"
+      ]
+    }
+  },
+  "ap_multi_cost_pattern": {
+    "total_distinct_ourRefNos": 33,
+    "multi_cost_line_shipments": 7,
+    "single_cost_line_shipments": 26,
+    "multi_cost_ratio_pct": 21.2,
+    "samples_first_3": [
+      {
+        "ourRefNo": "WSATOR261111",
+        "cost_line_count": 3,
+        "lines": [
+          {
+            "idx": 0,
+            "vendor": "WIN YAN LOGISTICS LTD.",
+            "amount": -165.0,
+            "currency": "USD",
+            "costLineDesc": "DETENTION CHARGE COV",
+            "vendorInternalId": 29989
+          },
+          {
+            "idx": 21,
+            "vendor": "HAPAG LLOYD (CANADA) LLC.",
+            "amount": 165.0,
+            "currency": "USD",
+            "costLineDesc": "DETENTION CHARGE 1 D",
+            "vendorInternalId": 29967
+          },
+          {
+            "idx": 28,
+            "vendor": "WIN YAN LOGISTICS LTD.",
+            "amount": 900.0,
+            "currency": "CAD",
+            "costLineDesc": "TRUCKING COST",
+            "vendorInternalId": 29958
+          }
+        ]
+      },
+      {
+        "ourRefNo": "RSTOR2603021",
+        "cost_line_count": 2,
+        "lines": [
+          {
+            "idx": 3,
+            "vendor": "CN - ACC",
+            "amount": 0.0,
+            "currency": "CAD",
+            "costLineDesc": "nan",
+            "vendorInternalId": 29985
+          },
+          {
+            "idx": 4,
+            "vendor": "WIN YAN LOGISTICS LTD.",
+            "amount": 725.0,
+            "currency": "CAD",
+            "costLineDesc": "TRUCKING COST",
+            "vendorInternalId": 29984
+          }
+        ]
+      },
+      {
+        "ourRefNo": "RSTOR2603022",
+        "cost_line_count": 2,
+        "lines": [
+          {
+            "idx": 10,
+            "vendor": "CN - ACC",
+            "amount": 750.0,
+            "currency": "CAD",
+            "costLineDesc": "TRUCKING COST",
+            "vendorInternalId": 29977
+          },
+          {
+            "idx": 13,
+            "vendor": "WIN YAN LOGISTICS LTD.",
+            "amount": 725.0,
+            "currency": "CAD",
+            "costLineDesc": "TRUCKING COST",
+            "vendorInternalId": 29974
+          }
+        ]
+      }
+    ]
+  },
+  "cross_source_linking_in_pilot": {
+    "invoice_distinct_ourRefNos": 14,
+    "ap_distinct_ourRefNos": 33,
+    "shared_ourRefNos": 11,
+    "sample_shared_refs": [
+      "919JSELG32447900",
+      "919JSELG39048600",
+      "HJTS023107",
+      "KR17501865",
+      "RSTOR2603021"
+    ]
+  },
+  "field_presence_pilot": {
+    "INVOICE": [
+      {
+        "field": "invoiceNo",
+        "present": 17,
+        "total": 17,
+        "pct": 100.0
+      },
+      {
+        "field": "ourRefNo",
+        "present": 14,
+        "total": 17,
+        "pct": 82.4
+      },
+      {
+        "field": "orderRef",
+        "present": 16,
+        "total": 17,
+        "pct": 94.1
+      },
+      {
+        "field": "partyName",
+        "present": 13,
+        "total": 17,
+        "pct": 76.5
+      }
+    ],
+    "AP": [
+      {
+        "field": "ourRefNo",
+        "present": 41,
+        "total": 41,
+        "pct": 100.0
+      },
+      {
+        "field": "vendorInternalId",
+        "present": 41,
+        "total": 41,
+        "pct": 100.0
+      },
+      {
+        "field": "paymentStatus",
+        "present": 27,
+        "total": 41,
+        "pct": 65.9
+      },
+      {
+        "field": "costLineDesc",
+        "present": 40,
+        "total": 41,
+        "pct": 97.6
+      },
+      {
+        "field": "vendorName",
+        "present": 41,
+        "total": 41,
+        "pct": 100.0
+      }
+    ],
+    "CRDR": [
+      {
+        "field": "partyName",
+        "present": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      {
+        "field": "amount",
+        "present": 7,
+        "total": 7,
+        "pct": 100.0
+      },
+      {
+        "field": "paymentMethod",
+        "present": 7,
+        "total": 7,
+        "pct": 100.0
+      }
+    ]
+  },
+  "v2_4_spec_impact": {
+    "erp_data_model": "DELTA-ONLY confirmed (0 internalId overlap across baseline + May)",
+    "erp_dedup_default": "keep_both (re-upload of identical batch is the only natural dedup case)",
+    "erp_dedup_detection": "sha256 of file + internalId range overlap check",
+    "ap_multi_line_rule": "CONFIRMED \u2014 17.5% of shipments have 2+ cost lines, must use vendor+ourRef+costLineDesc+amount key",
+    "cross_source_linking_key": "ourRefNo (66% of pilot AP rows share ourRefNo with INVOICE)",
+    "schema_drift_warning": "CRDR file column count varies (19 vs 15). Parser must detect, not assume.",
+    "statement_data_status": "NOT YET PROVIDED \u2014 re-issue vs delta question still open for statement uploads"
+  }
+}
