@@ -4,7 +4,7 @@
 
 import type { ParsingPreviewResult } from '../parsing-engine/types';
 
-export type DataSource = 'api' | 'fallback' | 'unknown';
+export type DataSource = 'api' | 'fallback' | 'snapshot' | 'unknown';
 
 export interface ApiHealth {
   status: 'ok';

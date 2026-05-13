@@ -286,6 +286,12 @@ a:hover { text-decoration: underline; }
   background: var(--status-warn-bg);
 }
 
+.source-pill.snapshot {
+  border-color: var(--status-info);
+  color: var(--status-info);
+  background: var(--status-info-bg);
+}
+
 .readiness-header {
   display: flex;
   justify-content: space-between;

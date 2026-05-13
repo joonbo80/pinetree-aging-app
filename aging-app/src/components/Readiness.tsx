@@ -27,7 +27,9 @@ export function Readiness({ lang, status, result, reviewCount, dataSource }: Rea
     ? null
     : dataSource === 'api'
       ? t.sourceApi
-      : t.sourceFallback;
+      : dataSource === 'snapshot'
+        ? t.sourceSnapshot
+        : t.sourceFallback;
 
   const fileCount = result?.classificationReport.length ?? 0;
   const criticalCount = result?.validationReport.critical.length ?? 0;

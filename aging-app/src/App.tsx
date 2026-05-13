@@ -20,6 +20,15 @@ import { Dashboard } from './components/dashboard/Dashboard';
 import { ReviewQueuePage } from './components/review/ReviewQueuePage';
 import { PartyDetailPage } from './components/party/PartyDetailPage';
 import { AgingReportPage } from './pages/AgingReportPage';
+import {
+  buildAgingSnapshot,
+  clearSnapshotStorage,
+  loadSnapshotFromStorage,
+  parseSnapshotText,
+  saveSnapshotToStorage,
+  serializeSnapshot,
+  snapshotFilename,
+} from './utils/snapshot';
 
 const LANG_KEY = 'agingApp.language';
 const SESSION_KEY = 'agingApp.lastImportSession';
@@ -75,6 +84,15 @@ export default function App() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [detailsNotice, setDetailsNotice] = useState<string | null>(null);
 
+  useEffect(() => {
+    const snapshot = loadSnapshotFromStorage();
+    if (!snapshot) return;
+    setResult(snapshot.result);
+    setDataSource('snapshot');
+    setImportedAt(snapshot.exportedAt);
+    setDetailsNotice('Snapshot restored from this browser.');
+  }, []);
+
   // Probe API health on mount so we can tell the user up-front whether
   // the server is reachable. Failure here is silent; the fallback path
   // still works.
@@ -107,6 +125,7 @@ export default function App() {
         setDataSource('api');
         setActiveTab('files');
         setImportedAt(null);
+        setDetailsNotice(null);
         return;
       }
       // Fall back to bundled baseline without pulling the large fixture
@@ -116,6 +135,7 @@ export default function App() {
       setDataSource('fallback');
       setActiveTab('files');
       setImportedAt(null);
+      setDetailsNotice(null);
     } finally {
       setLoading(false);
     }
@@ -128,6 +148,7 @@ export default function App() {
     setImportedAt(null);
     setUploadError(null);
     setDetailsNotice(null);
+    clearSnapshotStorage();
   };
 
   const openReviewRoute = (route: 'warnings' | 'aging-90-plus' | 'duplicates' | 'not-in-erp-extract' | 'unknown-department') => {
@@ -149,6 +170,7 @@ export default function App() {
       setDataSource('api');
       setActiveTab('files');
       setImportedAt(null);
+      setDetailsNotice(null);
       const h = await apiClient.health();
       setApiHealth(h);
     } catch (err) {
@@ -171,9 +193,49 @@ export default function App() {
       dataSource,
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    const snapshot = buildAgingSnapshot(result, dataSource, session.timestamp);
+    const saved = saveSnapshotToStorage(snapshot);
     setImportedAt(session.timestamp);
+    setDetailsNotice(saved ? 'Snapshot saved for browser restore.' : 'Import confirmed, but browser snapshot storage is full.');
     setShowConfirm(false);
     navigate('/dashboard');
+  };
+
+  const handleExportSnapshot = () => {
+    if (!result) return;
+    const snapshot = buildAgingSnapshot(result, dataSource);
+    const blob = new Blob([serializeSnapshot(snapshot)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = snapshotFilename(snapshot);
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const handleImportSnapshot = async (file: File) => {
+    setLoading(true);
+    setUploadError(null);
+    setDetailsNotice(null);
+    try {
+      const text = await file.text();
+      const parsed = parseSnapshotText(text);
+      const saved = saveSnapshotToStorage(parsed.snapshot);
+      setResult(parsed.snapshot.result);
+      setDataSource('snapshot');
+      setActiveTab('files');
+      setImportedAt(parsed.snapshot.exportedAt);
+      setDetailsNotice(
+        saved
+          ? 'Snapshot imported and saved for browser restore.'
+          : 'Snapshot imported, but browser snapshot storage is full.',
+      );
+      navigate('/dashboard');
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : 'Snapshot import failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const tabBadges = useMemo(() => {
@@ -239,6 +301,8 @@ export default function App() {
             lang={lang}
             onFiles={handleFiles}
             onLoadBaseline={handleLoadBaseline}
+            onImportSnapshot={handleImportSnapshot}
+            onExportSnapshot={handleExportSnapshot}
             onClear={handleClear}
             hasData={!!result}
             loading={loading}

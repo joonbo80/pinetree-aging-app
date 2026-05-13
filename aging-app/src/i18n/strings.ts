@@ -13,6 +13,8 @@ export const strings = {
     browse: 'Browse Files',
     loadBaseline: 'Load Baseline Demo',
     loadingBaseline: 'Loading…',
+    importSnapshot: 'Import Snapshot',
+    exportSnapshot: 'Export Snapshot',
     clear: 'Clear',
     confirmImport: 'Confirm Import',
     exportJson: 'Export JSON',
@@ -23,6 +25,7 @@ export const strings = {
     apiOffline: 'API offline',
     sourceApi: 'Source · API',
     sourceFallback: 'Source · Fallback',
+    sourceSnapshot: 'Source / Snapshot',
 
     // Upload-not-supported modal (P1-1 fix)
     uploadDisabledTitle: 'Live file parsing is not enabled in this build',
@@ -159,6 +162,8 @@ export const strings = {
     browse: '파일 선택',
     loadBaseline: '베이스라인 데모 불러오기',
     loadingBaseline: '불러오는 중',
+    importSnapshot: 'Snapshot 가져오기',
+    exportSnapshot: 'Snapshot 내보내기',
     clear: '초기화',
     confirmImport: '가져오기 확정',
     exportJson: 'JSON 내보내기',
@@ -169,6 +174,7 @@ export const strings = {
     apiOffline: 'API 미연결',
     sourceApi: '출처 · API',
     sourceFallback: '출처 · 내장본',
+    sourceSnapshot: '출처 / Snapshot',
 
     // Upload-not-supported modal
     uploadDisabledTitle: '이 빌드는 실제 파일 파싱을 지원하지 않습니다',
