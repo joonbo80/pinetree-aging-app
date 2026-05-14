@@ -2240,3 +2240,72 @@ button.statement-metric:focus-visible {
   font: inherit;
   text-decoration: underline;
 }
+
+/* C5 Entra auth spike */
+.auth-spike-page {
+  max-width: 980px;
+}
+
+.auth-spike-panel {
+  margin-top: 24px;
+}
+
+.auth-spike-body {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-spike-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.auth-spike-status {
+  margin: 0;
+}
+
+.auth-spike-grid,
+.auth-spike-result dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.auth-spike-grid > div,
+.auth-spike-result dl > div {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  background: var(--bg-panel-alt, #fbfaf6);
+}
+
+.auth-spike-grid span,
+.auth-spike-result dt {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-muted, #5f6b63);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.auth-spike-grid code,
+.auth-spike-result dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86rem;
+}
+
+.auth-spike-result h2 {
+  margin: 4px 0 10px;
+  font-size: 1rem;
+}
+
+@media (max-width: 720px) {
+  .auth-spike-grid,
+  .auth-spike-result dl {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { healthHandler } from './routes/health.js';
 import { parseDemoHandler, parseUploadHandler } from './routes/parse.js';
+import { spikeRouter } from './routes/spike.js';
+import { snapshotRouter } from './routes/snapshot.js';
 import { requireUploadToken } from './middleware/uploadAuth.js';
 
 const app = express();
@@ -42,6 +44,8 @@ app.use(express.json({ limit: '20mb' }));
 app.get('/api/health', healthHandler);
 app.get('/api/parse-demo', parseDemoHandler);
 app.post('/api/parse-upload', requireUploadToken, parseUploadHandler);
+app.use('/api/spike', spikeRouter);
+app.use('/api/snapshot', snapshotRouter);
 
 app.get('/', (_req, res) => {
   res.json({
@@ -50,6 +54,8 @@ app.get('/', (_req, res) => {
       'GET  /api/health',
       'GET  /api/parse-demo',
       'POST /api/parse-upload',
+      'GET  /api/spike/whoami',
+      'POST /api/snapshot/upload',
     ],
   });
 });
@@ -66,6 +72,8 @@ app.listen(PORT, HOST, () => {
   console.log(`            GET  /api/health`);
   console.log(`            GET  /api/parse-demo`);
   console.log(`            POST /api/parse-upload (requires X-Aging-Upload-Token)`);
+  console.log(`            GET  /api/spike/whoami (requires Entra delegated token)`);
+  console.log(`            POST /api/snapshot/upload (requires Entra delegated token)`);
   console.log(`            upload auth: ${process.env.AGING_UPLOAD_TOKEN ? 'configured' : 'NOT CONFIGURED'}`);
   console.log(`            CORS allowlist: ${allowlist.join(', ')}`);
 });

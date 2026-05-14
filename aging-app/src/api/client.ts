@@ -3,6 +3,7 @@
 // All calls are short-timed and return null/throw so callers can fall back to baseline.
 
 import type { ParsingPreviewResult } from '../parsing-engine/types';
+import type { AgingSnapshotV1 } from '../utils/snapshot';
 
 export type DataSource = 'api' | 'fallback' | 'snapshot' | 'unknown';
 
@@ -20,6 +21,24 @@ export interface ApiClientOptions {
   baseUrl?: string;
   timeoutMs?: number;
   uploadToken?: string;
+}
+
+export interface ServerSnapshotUploadResult {
+  status: 'ok';
+  source: 'sharepoint-snapshot-upload';
+  filename: string;
+  folder: string;
+  site: {
+    id: string;
+    displayName: string | null;
+    webUrl: string | null;
+  };
+  file: {
+    id: string;
+    name: string;
+    size: number | null;
+    webUrl: string | null;
+  };
 }
 
 const DEFAULT_BASE = (() => {
@@ -151,6 +170,40 @@ export class AgingApiClient {
 
   baseURL(): string {
     return this.baseUrl;
+  }
+
+  async uploadSnapshotToServer(
+    snapshot: AgingSnapshotV1,
+    filename: string,
+    accessToken: string,
+  ): Promise<ServerSnapshotUploadResult> {
+    const { signal, cancel } = withTimeout(45_000);
+    try {
+      const res = await fetch(`${this.baseUrl}/api/snapshot/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ snapshot, filename }),
+        signal,
+      });
+
+      if (!res.ok) {
+        let message = `Snapshot upload failed (${res.status})`;
+        try {
+          const error = await res.json() as { error?: string; code?: string };
+          message = error.error || error.code || message;
+        } catch {
+          // Keep generic message.
+        }
+        throw new Error(message);
+      }
+
+      return res.json() as Promise<ServerSnapshotUploadResult>;
+    } finally {
+      cancel();
+    }
   }
 }
 
