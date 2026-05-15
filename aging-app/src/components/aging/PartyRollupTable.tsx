@@ -26,6 +26,9 @@ interface PartyRollupTableProps {
 interface WorkflowMetadataSummary {
   ownerDisplayName: string;
   memoText: string;
+  promiseDate: string;
+  promiseAmount: number | null;
+  promiseStatus: string;
 }
 
 const PRIORITY_CLASS: Record<PriorityBand, string> = {
@@ -138,6 +141,9 @@ export function PartyRollupTable({ tabId, data, workspaceId }: PartyRollupTableP
           next[key] = {
             ownerDisplayName: item.fields.ownerDisplayName ?? '',
             memoText: item.fields.memoText ?? '',
+            promiseDate: item.fields.promiseDate ?? '',
+            promiseAmount: item.fields.promiseAmount ?? null,
+            promiseStatus: item.fields.promiseStatus ?? '',
           };
         }
         setWorkflowSummaries((prev) => ({ ...prev, ...next }));
@@ -203,6 +209,11 @@ export function PartyRollupTable({ tabId, data, workspaceId }: PartyRollupTableP
             const workflowSummary = workflowSummaries[key];
             const hasOwner = Boolean(workflowSummary?.ownerDisplayName.trim());
             const hasMemo = Boolean(workflowSummary?.memoText.trim());
+            const hasPromise = Boolean(
+              workflowSummary?.promiseDate.trim() ||
+              workflowSummary?.promiseStatus.trim() ||
+              workflowSummary?.promiseAmount !== null && workflowSummary?.promiseAmount !== undefined,
+            );
 
             return (
               <Fragment key={id}>
@@ -262,6 +273,11 @@ export function PartyRollupTable({ tabId, data, workspaceId }: PartyRollupTableP
                         {hasMemo && (
                           <span className="aging-workflow-chip memo">
                             Memo
+                          </span>
+                        )}
+                        {hasPromise && (
+                          <span className="aging-workflow-chip promise">
+                            {promiseBadgeLabel(workflowSummary)}
                           </span>
                         )}
                       </div>
@@ -336,6 +352,19 @@ function workflowKey(row: PartyRollup, workspaceId: string) {
   return `${workspaceId}__${row.partyKey}__${row.currency}__${row.direction}`;
 }
 
+function promiseBadgeLabel(summary: WorkflowMetadataSummary) {
+  if (summary.promiseDate) {
+    return `Promise: ${summary.promiseDate}`;
+  }
+  if (summary.promiseStatus) {
+    return `Promise: ${summary.promiseStatus}`;
+  }
+  if (summary.promiseAmount !== null && summary.promiseAmount !== undefined) {
+    return `Promise: ${money(summary.promiseAmount)}`;
+  }
+  return 'Promise';
+}
+
 function WorkflowLitePanel({
   row,
   workspaceId,
@@ -348,6 +377,9 @@ function WorkflowLitePanel({
   const key = workflowKey(row, workspaceId);
   const [owner, setOwner] = useState('');
   const [memo, setMemo] = useState('');
+  const [promiseDate, setPromiseDate] = useState('');
+  const [promiseAmount, setPromiseAmount] = useState('');
+  const [promiseStatus, setPromiseStatus] = useState('');
   const [status, setStatus] = useState('Not loaded');
   const [busy, setBusy] = useState(false);
 
@@ -364,9 +396,21 @@ function WorkflowLitePanel({
         if (cancelled) return;
         const nextOwner = result.item?.fields.ownerDisplayName ?? '';
         const nextMemo = result.item?.fields.memoText ?? '';
+        const nextPromiseDate = result.item?.fields.promiseDate ?? '';
+        const nextPromiseAmount = result.item?.fields.promiseAmount ?? null;
+        const nextPromiseStatus = result.item?.fields.promiseStatus ?? '';
         setOwner(nextOwner);
         setMemo(nextMemo);
-        onMetadataChange({ ownerDisplayName: nextOwner, memoText: nextMemo });
+        setPromiseDate(nextPromiseDate);
+        setPromiseAmount(nextPromiseAmount === null ? '' : String(nextPromiseAmount));
+        setPromiseStatus(nextPromiseStatus);
+        onMetadataChange({
+          ownerDisplayName: nextOwner,
+          memoText: nextMemo,
+          promiseDate: nextPromiseDate,
+          promiseAmount: nextPromiseAmount,
+          promiseStatus: nextPromiseStatus,
+        });
         setStatus(result.found ? 'Loaded from SharePoint.' : 'No workflow note yet.');
       })
       .catch((err) => {
@@ -396,12 +440,27 @@ function WorkflowLitePanel({
         direction: formatDirection(row.direction),
         ownerDisplayName: owner,
         memoText: memo,
+        promiseDate,
+        promiseAmount: promiseAmount.trim() ? Number(promiseAmount) : null,
+        promiseStatus,
       }, token);
       const nextOwner = result.item?.fields.ownerDisplayName ?? owner;
       const nextMemo = result.item?.fields.memoText ?? memo;
+      const nextPromiseDate = result.item?.fields.promiseDate ?? promiseDate;
+      const nextPromiseAmount = result.item?.fields.promiseAmount ?? (promiseAmount.trim() ? Number(promiseAmount) : null);
+      const nextPromiseStatus = result.item?.fields.promiseStatus ?? promiseStatus;
       setOwner(nextOwner);
       setMemo(nextMemo);
-      onMetadataChange({ ownerDisplayName: nextOwner, memoText: nextMemo });
+      setPromiseDate(nextPromiseDate);
+      setPromiseAmount(nextPromiseAmount === null ? '' : String(nextPromiseAmount));
+      setPromiseStatus(nextPromiseStatus);
+      onMetadataChange({
+        ownerDisplayName: nextOwner,
+        memoText: nextMemo,
+        promiseDate: nextPromiseDate,
+        promiseAmount: nextPromiseAmount,
+        promiseStatus: nextPromiseStatus,
+      });
       setStatus('Saved to SharePoint.');
     } catch (err) {
       setStatus(err instanceof Error ? err.message : 'Workflow metadata save failed.');
@@ -413,7 +472,7 @@ function WorkflowLitePanel({
   return (
     <div className="aging-workflow-lite">
       <div className="aging-workflow-lite-header">
-        <strong>Owner / Memo</strong>
+        <strong>Owner / Memo / Promise</strong>
         <span>{status}</span>
       </div>
       <div className="aging-workflow-lite-fields">
@@ -422,6 +481,30 @@ function WorkflowLitePanel({
           <input value={owner} onChange={(event) => setOwner(event.target.value)} placeholder="Owner name" />
         </label>
         <label>
+          <span>Promise Date</span>
+          <input type="date" value={promiseDate} onChange={(event) => setPromiseDate(event.target.value)} />
+        </label>
+        <label>
+          <span>Promise Amount</span>
+          <input
+            type="number"
+            step="0.01"
+            value={promiseAmount}
+            onChange={(event) => setPromiseAmount(event.target.value)}
+            placeholder="0.00"
+          />
+        </label>
+        <label>
+          <span>Promise Status</span>
+          <select value={promiseStatus} onChange={(event) => setPromiseStatus(event.target.value)}>
+            <option value="">None</option>
+            <option value="Open">Open</option>
+            <option value="FollowUp">Follow Up</option>
+            <option value="Paid">Paid</option>
+            <option value="Broken">Broken</option>
+          </select>
+        </label>
+        <label className="aging-workflow-memo-field">
           <span>Memo</span>
           <textarea value={memo} onChange={(event) => setMemo(event.target.value)} placeholder="Collection note" rows={2} />
         </label>

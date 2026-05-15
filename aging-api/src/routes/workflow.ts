@@ -22,6 +22,9 @@ interface WorkflowItemBody {
   direction?: unknown;
   ownerDisplayName?: unknown;
   memoText?: unknown;
+  promiseDate?: unknown;
+  promiseAmount?: unknown;
+  promiseStatus?: unknown;
 }
 
 function requiredString(value: unknown, label: string): string {
@@ -33,6 +36,15 @@ function requiredString(value: unknown, label: string): string {
 
 function optionalString(value: unknown): string {
   return typeof value === 'string' ? value : '';
+}
+
+function optionalNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim().length > 0) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
 }
 
 async function workflowContext(token: string) {
@@ -87,6 +99,9 @@ workflowRouter.get('/item', async (req, res) => {
           direction: item.fields?.[field('direction')] ?? null,
           ownerDisplayName: item.fields?.[field('ownerDisplayName')] ?? '',
           memoText: item.fields?.[field('memoText')] ?? '',
+          promiseDate: item.fields?.[field('promiseDate')] ?? '',
+          promiseAmount: item.fields?.[field('promiseAmount')] ?? null,
+          promiseStatus: item.fields?.[field('promiseStatus')] ?? '',
         },
       } : null,
     });
@@ -127,6 +142,9 @@ workflowRouter.get('/items', async (req, res) => {
           direction: item.fields?.[field('direction')] ?? null,
           ownerDisplayName: item.fields?.[field('ownerDisplayName')] ?? '',
           memoText: item.fields?.[field('memoText')] ?? '',
+          promiseDate: item.fields?.[field('promiseDate')] ?? '',
+          promiseAmount: item.fields?.[field('promiseAmount')] ?? null,
+          promiseStatus: item.fields?.[field('promiseStatus')] ?? '',
         },
       }));
 
@@ -164,6 +182,9 @@ workflowRouter.post('/item', async (req, res) => {
     const direction = requiredString(body.direction, 'direction');
     const ownerDisplayName = optionalString(body.ownerDisplayName);
     const memoText = optionalString(body.memoText);
+    const promiseDate = optionalString(body.promiseDate);
+    const promiseAmount = optionalNumber(body.promiseAmount);
+    const promiseStatus = optionalString(body.promiseStatus);
     const { site, list, field } = await workflowContext(token);
     const existing = await findWorkflowItem(token, site.id, list.id, field('workflowKey'), workflowKey);
 
@@ -177,6 +198,9 @@ workflowRouter.post('/item', async (req, res) => {
       [field('direction')]: direction,
       [field('ownerDisplayName')]: ownerDisplayName || principal.graphDisplayName || principal.name || '',
       [field('memoText')]: memoText,
+      [field('promiseDate')]: promiseDate || null,
+      [field('promiseAmount')]: promiseAmount,
+      [field('promiseStatus')]: promiseStatus,
     };
 
     const item = existing
@@ -203,6 +227,9 @@ workflowRouter.post('/item', async (req, res) => {
           workflowKey: hydrated.fields?.[field('workflowKey')] ?? workflowKey,
           ownerDisplayName: hydrated.fields?.[field('ownerDisplayName')] ?? ownerDisplayName,
           memoText: hydrated.fields?.[field('memoText')] ?? memoText,
+          promiseDate: hydrated.fields?.[field('promiseDate')] ?? promiseDate,
+          promiseAmount: hydrated.fields?.[field('promiseAmount')] ?? promiseAmount,
+          promiseStatus: hydrated.fields?.[field('promiseStatus')] ?? promiseStatus,
         },
       },
     });

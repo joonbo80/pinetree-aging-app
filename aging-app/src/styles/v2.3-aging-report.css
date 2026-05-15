@@ -637,6 +637,12 @@
   background: #eef5fb;
 }
 
+.aging-workflow-chip.promise {
+  border-color: #d7c287;
+  color: #67521d;
+  background: #fbf6e4;
+}
+
 .aging-direction-pill,
 .aging-badge,
 .aging-ninety-chip,
@@ -786,7 +792,7 @@
 
 .aging-workflow-lite-fields {
   display: grid;
-  grid-template-columns: minmax(140px, 220px) minmax(260px, 1fr) auto;
+  grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) minmax(130px, 1fr) minmax(140px, 1fr) auto;
   gap: 0.75rem;
   align-items: end;
 }
@@ -800,6 +806,7 @@
 }
 
 .aging-workflow-lite input,
+.aging-workflow-lite select,
 .aging-workflow-lite textarea {
   width: 100%;
   border: 1px solid #cbd5e1;
@@ -812,6 +819,10 @@
 .aging-workflow-lite textarea {
   resize: vertical;
   min-height: 2.25rem;
+}
+
+.aging-workflow-lite .aging-workflow-memo-field {
+  grid-column: 1 / span 4;
 }
 
 .aging-transaction-panel {

@@ -70,6 +70,9 @@ export interface WorkflowItemFields {
   direction?: string | null;
   ownerDisplayName: string;
   memoText: string;
+  promiseDate: string;
+  promiseAmount: number | null;
+  promiseStatus: string;
 }
 
 export interface WorkflowItemResult {
@@ -114,6 +117,9 @@ export interface WorkflowItemWriteInput {
   direction: string;
   ownerDisplayName: string;
   memoText: string;
+  promiseDate: string;
+  promiseAmount: number | null;
+  promiseStatus: string;
 }
 
 export function loadC5AuthSpikeAccessToken(): string | null {
