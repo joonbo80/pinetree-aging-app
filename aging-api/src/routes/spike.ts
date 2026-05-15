@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { bearerToken, validateGraphDelegatedToken } from '../auth/entra.js';
 import {
+  createWorkflowItem,
+  deleteWorkflowItem,
   graphHeaders,
   graphJson,
   graphNoContent,
@@ -9,11 +11,17 @@ import {
   GraphDriveItem,
   GraphSite,
   lookupSharePointSite,
+  listWorkflowColumns,
+  lookupWorkflowList,
+  readWorkflowItem,
   SHAREPOINT_HOST,
   SHAREPOINT_SITE_ID,
   SHAREPOINT_SITE_PATH,
   SNAPSHOT_FOLDER,
+  updateWorkflowItemFields,
   uploadSnapshotFile,
+  workflowFieldNameMap,
+  WORKFLOW_LIST_NAME,
 } from '../services/sharepointGraph.js';
 
 export const spikeRouter = Router();
@@ -101,6 +109,107 @@ spikeRouter.post('/sharepoint-roundtrip', async (req, res) => {
       code: 'SHAREPOINT_ROUNDTRIP_FAILED',
       cleanupStatus,
       error: err instanceof Error ? err.message : 'SharePoint round-trip failed.',
+    });
+  }
+});
+
+spikeRouter.post('/workflow-roundtrip', async (req, res) => {
+  let siteId: string | null = null;
+  let listId: string | null = null;
+  let itemId: string | null = null;
+  let cleanupStatus: 'not-started' | 'deleted' | 'failed' = 'not-started';
+
+  try {
+    const principal = await validateGraphDelegatedToken(req);
+    const token = bearerToken(req);
+    const workflowTarget = await lookupWorkflowList(token);
+    siteId = workflowTarget.site.id;
+    listId = workflowTarget.list.id;
+    const columns = await listWorkflowColumns(token, siteId, listId);
+    const fieldNames = workflowFieldNameMap(columns);
+    const field = (displayName: string) => {
+      const name = fieldNames[displayName];
+      if (!name) {
+        throw new Error(`Workflow list column not found: ${displayName}`);
+      }
+      return name;
+    };
+
+    const timestamp = new Date().toISOString();
+    const workspaceId = `c8-workflow-smoke-${timestamp.slice(0, 10)}`;
+    const workflowKey = `${workspaceId}__lemond-food-corp-new-addr__CAD__receivable`;
+
+    const fields = {
+      Title: 'C8 WORKFLOW ROUNDTRIP TEST',
+      [field('workspaceId')]: workspaceId,
+      [field('workflowKey')]: workflowKey,
+      [field('partyKey')]: 'lemond-food-corp-new-addr',
+      [field('partyName')]: 'LEMOND FOOD CORP NEW ADDR',
+      [field('currency')]: 'CAD',
+      [field('direction')]: 'Receivable',
+      [field('ownerDisplayName')]: principal.graphDisplayName ?? principal.name ?? 'JOONBO YOO',
+      [field('memoText')]: `C8 create proof ${timestamp}`,
+      [field('promiseDate')]: '2026-05-20',
+      [field('promiseAmount')]: 123.45,
+      [field('promiseStatus')]: 'Open',
+    };
+
+    const created = await createWorkflowItem(token, fields);
+    itemId = created.item.id;
+
+    const readAfterCreate = await readWorkflowItem(token, siteId, listId, itemId);
+    const updatedFields = await updateWorkflowItemFields(token, siteId, listId, itemId, {
+      [field('memoText')]: `C8 update proof ${timestamp}`,
+      [field('promiseStatus')]: 'FollowUp',
+    });
+    const readAfterUpdate = await readWorkflowItem(token, siteId, listId, itemId);
+
+    await deleteWorkflowItem(token, siteId, listId, itemId);
+    cleanupStatus = 'deleted';
+
+    res.json({
+      status: 'ok',
+      source: 'microsoft-graph-workflow-list-roundtrip',
+      site: {
+        id: created.site.id,
+        displayName: created.site.displayName ?? null,
+        webUrl: created.site.webUrl ?? null,
+      },
+      list: {
+        id: created.list.id,
+        displayName: created.list.displayName,
+        webUrl: created.list.webUrl ?? null,
+      },
+      item: {
+        id: created.item.id,
+        webUrl: created.item.webUrl ?? null,
+      },
+      fields: {
+        createdTitle: readAfterCreate.fields?.Title ?? null,
+        createdWorkflowKey: readAfterCreate.fields?.[field('workflowKey')] ?? null,
+        updatedMemoText: readAfterUpdate.fields?.[field('memoText')] ?? updatedFields[field('memoText')] ?? null,
+        updatedPromiseStatus: readAfterUpdate.fields?.[field('promiseStatus')] ?? updatedFields[field('promiseStatus')] ?? null,
+        internalDirectionField: field('direction'),
+      },
+      cleanupStatus,
+    });
+  } catch (err) {
+    if (siteId && listId && itemId && cleanupStatus !== 'deleted') {
+      try {
+        const token = bearerToken(req);
+        await deleteWorkflowItem(token, siteId, listId, itemId);
+        cleanupStatus = 'deleted';
+      } catch {
+        cleanupStatus = 'failed';
+      }
+    }
+
+    res.status(500).json({
+      status: 'error',
+      code: 'WORKFLOW_ROUNDTRIP_FAILED',
+      list: WORKFLOW_LIST_NAME,
+      cleanupStatus,
+      error: err instanceof Error ? err.message : 'Workflow list round-trip failed.',
     });
   }
 });

@@ -4,6 +4,7 @@ export const SHAREPOINT_WEB_ID = '0fc32f15-b8b1-4c6e-9854-2eb04a096f04';
 export const SHAREPOINT_SITE_ID = `${SHAREPOINT_HOST},${SHAREPOINT_SITE_COLLECTION_ID},${SHAREPOINT_WEB_ID}`;
 export const SHAREPOINT_SITE_PATH = 'PinetreeExpressIntlfreightforwardingco-ACCOUNTING';
 export const SNAPSHOT_FOLDER = 'AGING&STATEMENT APP';
+export const WORKFLOW_LIST_NAME = 'PE Aging&Statement Workflow';
 
 export interface GraphSite {
   id: string;
@@ -18,6 +19,24 @@ export interface GraphDriveItem {
   size?: number;
   lastModifiedDateTime?: string;
   file?: unknown;
+}
+
+export interface GraphList {
+  id: string;
+  displayName: string;
+  webUrl?: string;
+}
+
+export interface GraphListItem {
+  id: string;
+  webUrl?: string;
+  fields?: Record<string, unknown>;
+}
+
+export interface GraphColumn {
+  id: string;
+  name: string;
+  displayName: string;
 }
 
 export function graphHeaders(token: string, contentType?: string) {
@@ -140,4 +159,91 @@ export async function downloadDriveItemText(token: string, siteId: string, itemI
   }
 
   return response.text();
+}
+
+export async function lookupWorkflowList(token: string): Promise<{
+  site: GraphSite;
+  list: GraphList;
+}> {
+  const site = await lookupSharePointSite(token);
+  const url = `https://graph.microsoft.com/v1.0/sites/${site.id}/lists?$select=id,displayName,webUrl`;
+  const body = await graphJson<{ value?: GraphList[] }>(url, token);
+  const list = (body.value ?? []).find(item => item.displayName === WORKFLOW_LIST_NAME);
+
+  if (!list) {
+    throw new Error(`SharePoint list not found: ${WORKFLOW_LIST_NAME}`);
+  }
+
+  return { site, list };
+}
+
+export async function listWorkflowColumns(
+  token: string,
+  siteId: string,
+  listId: string,
+): Promise<GraphColumn[]> {
+  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/columns?$select=id,name,displayName`;
+  const body = await graphJson<{ value?: GraphColumn[] }>(url, token);
+  return body.value ?? [];
+}
+
+export function workflowFieldNameMap(columns: GraphColumn[]): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const column of columns) {
+    map[column.displayName] = column.name;
+  }
+  return map;
+}
+
+export async function createWorkflowItem(
+  token: string,
+  fields: Record<string, unknown>,
+): Promise<{
+  site: GraphSite;
+  list: GraphList;
+  item: GraphListItem;
+}> {
+  const { site, list } = await lookupWorkflowList(token);
+  const url = `https://graph.microsoft.com/v1.0/sites/${site.id}/lists/${list.id}/items`;
+  const item = await graphJson<GraphListItem>(url, token, {
+    method: 'POST',
+    headers: graphHeaders(token, 'application/json'),
+    body: JSON.stringify({ fields }),
+  });
+  return { site, list, item };
+}
+
+export async function readWorkflowItem(
+  token: string,
+  siteId: string,
+  listId: string,
+  itemId: string,
+): Promise<GraphListItem> {
+  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items/${itemId}?expand=fields`;
+  return graphJson<GraphListItem>(url, token);
+}
+
+export async function updateWorkflowItemFields(
+  token: string,
+  siteId: string,
+  listId: string,
+  itemId: string,
+  fields: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items/${itemId}/fields`;
+  return graphJson<Record<string, unknown>>(url, token, {
+    method: 'PATCH',
+    headers: graphHeaders(token, 'application/json'),
+    body: JSON.stringify(fields),
+  });
+}
+
+export async function deleteWorkflowItem(
+  token: string,
+  siteId: string,
+  listId: string,
+  itemId: string,
+): Promise<void> {
+  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items/${itemId}`;
+  await graphNoContent(url, token, { method: 'DELETE' });
 }

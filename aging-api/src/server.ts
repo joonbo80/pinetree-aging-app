@@ -55,6 +55,7 @@ app.get('/', (_req, res) => {
       'GET  /api/parse-demo',
       'POST /api/parse-upload',
       'GET  /api/spike/whoami',
+      'POST /api/spike/workflow-roundtrip',
       'POST /api/snapshot/upload',
       'GET  /api/snapshot/latest',
     ],
@@ -74,6 +75,7 @@ app.listen(PORT, HOST, () => {
   console.log(`            GET  /api/parse-demo`);
   console.log(`            POST /api/parse-upload (requires X-Aging-Upload-Token)`);
   console.log(`            GET  /api/spike/whoami (requires Entra delegated token)`);
+  console.log(`            POST /api/spike/workflow-roundtrip (requires Entra delegated token)`);
   console.log(`            POST /api/snapshot/upload (requires Entra delegated token)`);
   console.log(`            GET  /api/snapshot/latest (requires Entra delegated token)`);
   console.log(`            upload auth: ${process.env.AGING_UPLOAD_TOKEN ? 'configured' : 'NOT CONFIGURED'}`);

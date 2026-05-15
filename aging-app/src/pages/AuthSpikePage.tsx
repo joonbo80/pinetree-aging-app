@@ -81,6 +81,32 @@ interface SharePointDiagnosticsResult {
   }>;
 }
 
+interface WorkflowRoundTripResult {
+  status: 'ok';
+  source: string;
+  site: {
+    id: string;
+    displayName: string | null;
+    webUrl: string | null;
+  };
+  list: {
+    id: string;
+    displayName: string;
+    webUrl: string | null;
+  };
+  item: {
+    id: string;
+    webUrl: string | null;
+  };
+  fields: {
+    createdTitle: unknown;
+    createdWorkflowKey: unknown;
+    updatedMemoText: unknown;
+    updatedPromiseStatus: unknown;
+  };
+  cleanupStatus: 'not-started' | 'deleted' | 'failed';
+}
+
 function authEndpoint() {
   return `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize`;
 }
@@ -198,6 +224,7 @@ export function AuthSpikePage() {
   const [busy, setBusy] = useState(false);
   const [apiBusy, setApiBusy] = useState(false);
   const [sharePointBusy, setSharePointBusy] = useState(false);
+  const [workflowBusy, setWorkflowBusy] = useState(false);
   const [snapshotUploadBusy, setSnapshotUploadBusy] = useState(false);
   const [snapshotRestoreBusy, setSnapshotRestoreBusy] = useState(false);
   const [diagnosticsBusy, setDiagnosticsBusy] = useState(false);
@@ -206,6 +233,7 @@ export function AuthSpikePage() {
   const [error, setError] = useState<string | null>(null);
   const [whoami, setWhoami] = useState<WhoamiResult | null>(null);
   const [roundTrip, setRoundTrip] = useState<SharePointRoundTripResult | null>(null);
+  const [workflowRoundTrip, setWorkflowRoundTrip] = useState<WorkflowRoundTripResult | null>(null);
   const [diagnostics, setDiagnostics] = useState<SharePointDiagnosticsResult | null>(null);
   const [snapshotUpload, setSnapshotUpload] = useState<ServerSnapshotUploadResult | null>(null);
   const [snapshotRestore, setSnapshotRestore] = useState<{
@@ -280,6 +308,7 @@ export function AuthSpikePage() {
     setToken(null);
     setWhoami(null);
     setRoundTrip(null);
+    setWorkflowRoundTrip(null);
     setDiagnostics(null);
     setSnapshotUpload(null);
     setSnapshotRestore(null);
@@ -403,6 +432,38 @@ export function AuthSpikePage() {
     }
   };
 
+  const callWorkflowRoundTrip = async () => {
+    if (!token) return;
+    setWorkflowBusy(true);
+    setError(null);
+    setWorkflowRoundTrip(null);
+    setStatus('Calling workflow metadata list round-trip...');
+    try {
+      const ctrl = new AbortController();
+      const timeout = setTimeout(() => ctrl.abort(), 25_000);
+      const response = await fetch(`${apiClient.baseURL()}/api/spike/workflow-roundtrip`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token.accessToken}`,
+        },
+        signal: ctrl.signal,
+      });
+      clearTimeout(timeout);
+      const body = await response.json() as WorkflowRoundTripResult | { error?: string; code?: string; cleanupStatus?: string };
+      if (!response.ok) {
+        const cleanup = 'cleanupStatus' in body && body.cleanupStatus ? ` Cleanup: ${body.cleanupStatus}.` : '';
+        throw new Error(`${'error' in body && body.error ? body.error : `workflow round-trip failed (${response.status})`}${cleanup}`);
+      }
+      setWorkflowRoundTrip(body as WorkflowRoundTripResult);
+      setStatus('Workflow metadata list round-trip completed.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Workflow metadata list round-trip failed.');
+      setStatus('Workflow metadata list round-trip failed.');
+    } finally {
+      setWorkflowBusy(false);
+    }
+  };
+
   const callWhoami = async () => {
     if (!token) return;
     setApiBusy(true);
@@ -471,6 +532,9 @@ export function AuthSpikePage() {
             </button>
             <button type="button" className="btn" disabled={sharePointBusy || !token} onClick={callSharePointRoundTrip}>
               Call SharePoint round-trip
+            </button>
+            <button type="button" className="btn" disabled={workflowBusy || !token} onClick={callWorkflowRoundTrip}>
+              Call Workflow list round-trip
             </button>
             <button type="button" className="btn" disabled={diagnosticsBusy || !token} onClick={callSharePointDiagnostics}>
               Diagnose SharePoint
@@ -611,6 +675,46 @@ export function AuthSpikePage() {
                 <div>
                   <dt>Site</dt>
                   <dd>{roundTrip.site.displayName || roundTrip.site.webUrl || roundTrip.site.id}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
+
+          {workflowRoundTrip && (
+            <div className="auth-spike-result">
+              <h2>Workflow list round-trip</h2>
+              <dl>
+                <div>
+                  <dt>Status</dt>
+                  <dd>{workflowRoundTrip.status}</dd>
+                </div>
+                <div>
+                  <dt>Source</dt>
+                  <dd>{workflowRoundTrip.source}</dd>
+                </div>
+                <div>
+                  <dt>List</dt>
+                  <dd>{workflowRoundTrip.list.displayName}</dd>
+                </div>
+                <div>
+                  <dt>Created item ID</dt>
+                  <dd>{workflowRoundTrip.item.id}</dd>
+                </div>
+                <div>
+                  <dt>Created workflow key</dt>
+                  <dd>{String(workflowRoundTrip.fields.createdWorkflowKey ?? '(not provided)')}</dd>
+                </div>
+                <div>
+                  <dt>Updated memo</dt>
+                  <dd>{String(workflowRoundTrip.fields.updatedMemoText ?? '(not provided)')}</dd>
+                </div>
+                <div>
+                  <dt>Updated status</dt>
+                  <dd>{String(workflowRoundTrip.fields.updatedPromiseStatus ?? '(not provided)')}</dd>
+                </div>
+                <div>
+                  <dt>Cleanup</dt>
+                  <dd>{workflowRoundTrip.cleanupStatus}</dd>
                 </div>
               </dl>
             </div>
