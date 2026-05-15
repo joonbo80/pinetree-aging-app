@@ -16,6 +16,8 @@ export interface GraphDriveItem {
   name: string;
   webUrl?: string;
   size?: number;
+  lastModifiedDateTime?: string;
+  file?: unknown;
 }
 
 export function graphHeaders(token: string, contentType?: string) {
@@ -108,4 +110,34 @@ export async function uploadSnapshotFile(token: string, filename: string, conten
     body: content,
   });
   return { site, file };
+}
+
+export async function listSnapshotFiles(token: string): Promise<{
+  site: GraphSite;
+  files: GraphDriveItem[];
+}> {
+  const site = await lookupSharePointSite(token);
+  const folderPath = graphPath(SNAPSHOT_FOLDER);
+  const url = `https://graph.microsoft.com/v1.0/sites/${site.id}/drive/root:/${folderPath}:/children?$select=id,name,size,webUrl,lastModifiedDateTime,file`;
+  const body = await graphJson<{ value?: GraphDriveItem[] }>(url, token);
+  const files = (body.value ?? [])
+    .filter(item => item.file)
+    .filter(item => item.name.startsWith('aging-snapshot-') && item.name.endsWith('.json'))
+    .sort((a, b) => String(b.lastModifiedDateTime ?? '').localeCompare(String(a.lastModifiedDateTime ?? '')));
+  return { site, files };
+}
+
+export async function downloadDriveItemText(token: string, siteId: string, itemId: string): Promise<string> {
+  const url = `https://graph.microsoft.com/v1.0/sites/${siteId}/drive/items/${itemId}/content`;
+  const response = await fetch(url, {
+    headers: graphHeaders(token),
+    signal: AbortSignal.timeout(30_000),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`Graph request failed (${response.status}): ${body.slice(0, 360)}`);
+  }
+
+  return response.text();
 }

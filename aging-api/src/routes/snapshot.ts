@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import { bearerToken, validateGraphDelegatedToken } from '../auth/entra.js';
-import { SNAPSHOT_FOLDER, uploadSnapshotFile } from '../services/sharepointGraph.js';
+import {
+  downloadDriveItemText,
+  listSnapshotFiles,
+  SNAPSHOT_FOLDER,
+  uploadSnapshotFile,
+} from '../services/sharepointGraph.js';
 
 export const snapshotRouter = Router();
 
@@ -88,6 +93,62 @@ snapshotRouter.post('/upload', async (req, res) => {
     res.status(status).json({
       status: 'error',
       code: 'SNAPSHOT_UPLOAD_FAILED',
+      error: message,
+    });
+  }
+});
+
+snapshotRouter.get('/latest', async (req, res) => {
+  try {
+    await validateGraphDelegatedToken(req);
+    const token = bearerToken(req);
+    const { site, files } = await listSnapshotFiles(token);
+    const latest = files[0];
+
+    if (!latest) {
+      res.status(404).json({
+        status: 'error',
+        code: 'SNAPSHOT_NOT_FOUND',
+        error: 'No server snapshot found in SharePoint.',
+      });
+      return;
+    }
+
+    const text = await downloadDriveItemText(token, site.id, latest.id);
+    let snapshot: unknown;
+    try {
+      snapshot = JSON.parse(text);
+    } catch {
+      throw new Error(`Server snapshot ${latest.name} is not valid JSON.`);
+    }
+
+    assertSnapshot(snapshot);
+
+    res.json({
+      status: 'ok',
+      source: 'sharepoint-snapshot-latest',
+      filename: latest.name,
+      folder: SNAPSHOT_FOLDER,
+      site: {
+        id: site.id,
+        displayName: site.displayName ?? null,
+        webUrl: site.webUrl ?? null,
+      },
+      file: {
+        id: latest.id,
+        name: latest.name,
+        size: latest.size ?? null,
+        webUrl: latest.webUrl ?? null,
+        lastModifiedDateTime: latest.lastModifiedDateTime ?? null,
+      },
+      snapshot,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Latest snapshot read failed.';
+    const status = message.includes('Bearer') || message.includes('Token') ? 401 : 500;
+    res.status(status).json({
+      status: 'error',
+      code: 'SNAPSHOT_LATEST_FAILED',
       error: message,
     });
   }
