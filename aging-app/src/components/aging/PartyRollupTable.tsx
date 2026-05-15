@@ -47,6 +47,11 @@ function money(value: number) {
   });
 }
 
+function signedMoney(value: number, currency: string) {
+  const sign = value < 0 ? '-' : '';
+  return `${currency} ${sign}${money(Math.abs(value))}`;
+}
+
 function rollupId(row: PartyRollup) {
   return `${row.partyKey}__${row.currency}__${row.direction}`;
 }
@@ -365,6 +370,44 @@ function promiseBadgeLabel(summary: WorkflowMetadataSummary) {
   return 'Promise';
 }
 
+function emailSubject(row: PartyRollup) {
+  return `Statement follow-up - ${row.partyName} - ${row.currency} ${formatDirection(row.direction)}`;
+}
+
+function emailBody(row: PartyRollup, summary: WorkflowMetadataSummary) {
+  const lines = [
+    `Hello ${row.partyName},`,
+    '',
+    'I am following up on the open statement balance below.',
+    '',
+    `Party: ${row.partyName}`,
+    `Currency: ${row.currency}`,
+    `Direction: ${formatDirection(row.direction)}`,
+    `Open amount: ${signedMoney(row.openAmount, row.currency)}`,
+    `Invoice count: ${row.invoiceCount}`,
+    `Oldest aging: ${row.oldestAgingDays} days`,
+    `Statement status: ${formatStatementStatus(row.statementStatus)}`,
+  ];
+
+  if (summary.promiseDate || summary.promiseAmount !== null || summary.promiseStatus) {
+    lines.push('', 'Promise tracking:');
+    if (summary.promiseDate) lines.push(`- Date: ${summary.promiseDate}`);
+    if (summary.promiseAmount !== null) lines.push(`- Amount: ${signedMoney(summary.promiseAmount, row.currency)}`);
+    if (summary.promiseStatus) lines.push(`- Status: ${summary.promiseStatus}`);
+  }
+
+  if (summary.memoText.trim()) {
+    lines.push('', 'Internal memo context:', summary.memoText.trim());
+  }
+
+  lines.push('', 'Please confirm the expected payment or advise if your records differ.', '', 'Thank you,');
+  return lines.join('\n');
+}
+
+function mailtoUrl(subject: string, body: string) {
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 function WorkflowLitePanel({
   row,
   workspaceId,
@@ -381,7 +424,17 @@ function WorkflowLitePanel({
   const [promiseAmount, setPromiseAmount] = useState('');
   const [promiseStatus, setPromiseStatus] = useState('');
   const [status, setStatus] = useState('Not loaded');
+  const [draftStatus, setDraftStatus] = useState('');
   const [busy, setBusy] = useState(false);
+  const workflowSummary: WorkflowMetadataSummary = {
+    ownerDisplayName: owner,
+    memoText: memo,
+    promiseDate,
+    promiseAmount: promiseAmount.trim() ? Number(promiseAmount) : null,
+    promiseStatus,
+  };
+  const draftSubject = emailSubject(row);
+  const draftBody = emailBody(row, workflowSummary);
 
   useEffect(() => {
     const token = loadC5AuthSpikeAccessToken();
@@ -469,6 +522,21 @@ function WorkflowLitePanel({
     }
   };
 
+  const copyDraft = async () => {
+    const content = `Subject: ${draftSubject}\n\n${draftBody}`;
+    try {
+      await navigator.clipboard.writeText(content);
+      setDraftStatus('Draft copied.');
+    } catch {
+      setDraftStatus('Copy failed. Select and copy the draft manually.');
+    }
+  };
+
+  const openEmailDraft = () => {
+    window.location.href = mailtoUrl(draftSubject, draftBody);
+    setDraftStatus('Email draft opened.');
+  };
+
   return (
     <div className="aging-workflow-lite">
       <div className="aging-workflow-lite-header">
@@ -511,6 +579,28 @@ function WorkflowLitePanel({
         <button type="button" className="btn btn-secondary" disabled={busy || !workspaceId} onClick={save}>
           Save
         </button>
+      </div>
+      <div className="aging-email-draft-lite">
+        <div className="aging-email-draft-head">
+          <strong>Email Draft</strong>
+          <span>{draftStatus || 'Review before sending. No automatic email is sent.'}</span>
+        </div>
+        <label>
+          <span>Subject</span>
+          <input value={draftSubject} readOnly />
+        </label>
+        <label>
+          <span>Body</span>
+          <textarea value={draftBody} readOnly rows={9} />
+        </label>
+        <div className="aging-email-draft-actions">
+          <button type="button" className="btn btn-ghost" onClick={copyDraft}>
+            Copy Draft
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={openEmailDraft}>
+            Open Email Draft
+          </button>
+        </div>
       </div>
     </div>
   );

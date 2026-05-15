@@ -825,6 +825,58 @@
   grid-column: 1 / span 4;
 }
 
+.aging-email-draft-lite {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #d7e3dc;
+}
+
+.aging-email-draft-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #355c4a;
+  font-size: 0.85rem;
+}
+
+.aging-email-draft-head span {
+  color: #64748b;
+}
+
+.aging-email-draft-lite label {
+  display: grid;
+  gap: 0.25rem;
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.aging-email-draft-lite input,
+.aging-email-draft-lite textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+  font: inherit;
+  padding: 0.45rem 0.55rem;
+}
+
+.aging-email-draft-lite textarea {
+  resize: vertical;
+  min-height: 10rem;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.aging-email-draft-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .aging-transaction-panel {
   padding: 0.75rem 1rem 1rem;
 }
