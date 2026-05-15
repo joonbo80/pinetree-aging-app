@@ -607,6 +607,36 @@
   border-color: #d8c9a9;
 }
 
+.aging-workflow-chip-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.aging-workflow-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 3px;
+  padding: 0.12rem 0.42rem;
+  border: 1px solid #b9d3c7;
+  color: #285342;
+  background: #eef8f2;
+  font-size: 0.66rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.aging-workflow-chip.memo {
+  border-color: #b8c9df;
+  color: #284b69;
+  background: #eef5fb;
+}
+
 .aging-direction-pill,
 .aging-badge,
 .aging-ninety-chip,
@@ -732,6 +762,56 @@
 .aging-rollup-detail-row > td {
   padding: 0;
   background: #f8fafc;
+}
+
+.aging-workflow-lite {
+  margin: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #d7e3dc;
+  background: #fbfdfb;
+}
+
+.aging-workflow-lite-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+  color: #355c4a;
+  font-size: 0.85rem;
+}
+
+.aging-workflow-lite-header span {
+  color: #64748b;
+}
+
+.aging-workflow-lite-fields {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) minmax(260px, 1fr) auto;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.aging-workflow-lite label {
+  display: grid;
+  gap: 0.25rem;
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.aging-workflow-lite input,
+.aging-workflow-lite textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #0f172a;
+  font: inherit;
+  padding: 0.45rem 0.55rem;
+}
+
+.aging-workflow-lite textarea {
+  resize: vertical;
+  min-height: 2.25rem;
 }
 
 .aging-transaction-panel {

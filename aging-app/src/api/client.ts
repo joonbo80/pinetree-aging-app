@@ -61,6 +61,81 @@ export interface ServerSnapshotReadResult {
   snapshot: AgingSnapshotV1;
 }
 
+export interface WorkflowItemFields {
+  workspaceId: string | null;
+  workflowKey: string | null;
+  partyKey?: string | null;
+  partyName?: string | null;
+  currency?: string | null;
+  direction?: string | null;
+  ownerDisplayName: string;
+  memoText: string;
+}
+
+export interface WorkflowItemResult {
+  status: 'ok';
+  source: string;
+  list: {
+    id: string;
+    displayName: string;
+    webUrl: string | null;
+  };
+  found?: boolean;
+  item: null | {
+    id: string;
+    webUrl: string | null;
+    fields: WorkflowItemFields;
+  };
+}
+
+export interface WorkflowItemsResult {
+  status: 'ok';
+  source: 'sharepoint-workflow-items-read';
+  list: {
+    id: string;
+    displayName: string;
+    webUrl: string | null;
+  };
+  workspaceId: string;
+  count: number;
+  items: Array<{
+    id: string;
+    webUrl: string | null;
+    fields: WorkflowItemFields;
+  }>;
+}
+
+export interface WorkflowItemWriteInput {
+  workspaceId: string;
+  workflowKey: string;
+  partyKey: string;
+  partyName: string;
+  currency: string;
+  direction: string;
+  ownerDisplayName: string;
+  memoText: string;
+}
+
+export function loadC5AuthSpikeAccessToken(): string | null {
+  const load = (storage: Storage) => {
+    const raw = storage.getItem('agingApp.c5AuthSpike.token');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { accessToken?: string; expiresAt?: number };
+    if (!parsed.accessToken || !parsed.expiresAt || parsed.expiresAt <= Date.now()) return null;
+    return parsed.accessToken;
+  };
+
+  try {
+    return load(localStorage) ?? load(sessionStorage);
+  } catch {
+    try {
+      return load(sessionStorage);
+    } catch {
+      return null;
+    }
+  }
+}
+
 const DEFAULT_BASE = (() => {
   // Allow override via Vite env, otherwise default to localhost:3001
   // (developer machine) — production deployments will inject via env.
@@ -248,6 +323,82 @@ export class AgingApiClient {
       }
 
       return res.json() as Promise<ServerSnapshotReadResult>;
+    } finally {
+      cancel();
+    }
+  }
+
+  async readWorkflowItem(workflowKey: string, accessToken: string): Promise<WorkflowItemResult> {
+    const { signal, cancel } = withTimeout(30_000);
+    try {
+      const qs = new URLSearchParams({ workflowKey });
+      const res = await fetch(`${this.baseUrl}/api/workflow/item?${qs.toString()}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal,
+      });
+      if (!res.ok) {
+        let message = `Workflow item read failed (${res.status})`;
+        try {
+          const error = await res.json() as { error?: string; code?: string };
+          message = error.error || error.code || message;
+        } catch {
+          // Keep generic message.
+        }
+        throw new Error(message);
+      }
+      return res.json() as Promise<WorkflowItemResult>;
+    } finally {
+      cancel();
+    }
+  }
+
+  async readWorkflowItems(workspaceId: string, accessToken: string): Promise<WorkflowItemsResult> {
+    const { signal, cancel } = withTimeout(30_000);
+    try {
+      const qs = new URLSearchParams({ workspaceId });
+      const res = await fetch(`${this.baseUrl}/api/workflow/items?${qs.toString()}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal,
+      });
+      if (!res.ok) {
+        let message = `Workflow items read failed (${res.status})`;
+        try {
+          const error = await res.json() as { error?: string; code?: string };
+          message = error.error || error.code || message;
+        } catch {
+          // Keep generic message.
+        }
+        throw new Error(message);
+      }
+      return res.json() as Promise<WorkflowItemsResult>;
+    } finally {
+      cancel();
+    }
+  }
+
+  async writeWorkflowItem(input: WorkflowItemWriteInput, accessToken: string): Promise<WorkflowItemResult> {
+    const { signal, cancel } = withTimeout(30_000);
+    try {
+      const res = await fetch(`${this.baseUrl}/api/workflow/item`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+        signal,
+      });
+      if (!res.ok) {
+        let message = `Workflow item write failed (${res.status})`;
+        try {
+          const error = await res.json() as { error?: string; code?: string };
+          message = error.error || error.code || message;
+        } catch {
+          // Keep generic message.
+        }
+        throw new Error(message);
+      }
+      return res.json() as Promise<WorkflowItemResult>;
     } finally {
       cancel();
     }

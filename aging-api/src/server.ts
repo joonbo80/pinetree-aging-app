@@ -4,6 +4,7 @@ import { healthHandler } from './routes/health.js';
 import { parseDemoHandler, parseUploadHandler } from './routes/parse.js';
 import { spikeRouter } from './routes/spike.js';
 import { snapshotRouter } from './routes/snapshot.js';
+import { workflowRouter } from './routes/workflow.js';
 import { requireUploadToken } from './middleware/uploadAuth.js';
 
 const app = express();
@@ -46,6 +47,7 @@ app.get('/api/parse-demo', parseDemoHandler);
 app.post('/api/parse-upload', requireUploadToken, parseUploadHandler);
 app.use('/api/spike', spikeRouter);
 app.use('/api/snapshot', snapshotRouter);
+app.use('/api/workflow', workflowRouter);
 
 app.get('/', (_req, res) => {
   res.json({
@@ -58,6 +60,9 @@ app.get('/', (_req, res) => {
       'POST /api/spike/workflow-roundtrip',
       'POST /api/snapshot/upload',
       'GET  /api/snapshot/latest',
+      'GET  /api/workflow/item',
+      'GET  /api/workflow/items',
+      'POST /api/workflow/item',
     ],
   });
 });
@@ -78,6 +83,9 @@ app.listen(PORT, HOST, () => {
   console.log(`            POST /api/spike/workflow-roundtrip (requires Entra delegated token)`);
   console.log(`            POST /api/snapshot/upload (requires Entra delegated token)`);
   console.log(`            GET  /api/snapshot/latest (requires Entra delegated token)`);
+  console.log(`            GET  /api/workflow/item (requires Entra delegated token)`);
+  console.log(`            GET  /api/workflow/items (requires Entra delegated token)`);
+  console.log(`            POST /api/workflow/item (requires Entra delegated token)`);
   console.log(`            upload auth: ${process.env.AGING_UPLOAD_TOKEN ? 'configured' : 'NOT CONFIGURED'}`);
   console.log(`            CORS allowlist: ${allowlist.join(', ')}`);
 });
