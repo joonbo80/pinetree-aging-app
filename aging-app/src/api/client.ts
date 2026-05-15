@@ -41,6 +41,26 @@ export interface ServerSnapshotUploadResult {
   };
 }
 
+export interface ServerSnapshotReadResult {
+  status: 'ok';
+  source: 'sharepoint-snapshot-latest';
+  filename: string;
+  folder: string;
+  site: {
+    id: string;
+    displayName: string | null;
+    webUrl: string | null;
+  };
+  file: {
+    id: string;
+    name: string;
+    size: number | null;
+    webUrl: string | null;
+    lastModifiedDateTime: string | null;
+  };
+  snapshot: AgingSnapshotV1;
+}
+
 const DEFAULT_BASE = (() => {
   // Allow override via Vite env, otherwise default to localhost:3001
   // (developer machine) — production deployments will inject via env.
@@ -201,6 +221,33 @@ export class AgingApiClient {
       }
 
       return res.json() as Promise<ServerSnapshotUploadResult>;
+    } finally {
+      cancel();
+    }
+  }
+
+  async restoreLatestServerSnapshot(accessToken: string): Promise<ServerSnapshotReadResult> {
+    const { signal, cancel } = withTimeout(45_000);
+    try {
+      const res = await fetch(`${this.baseUrl}/api/snapshot/latest`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        signal,
+      });
+
+      if (!res.ok) {
+        let message = `Latest snapshot read failed (${res.status})`;
+        try {
+          const error = await res.json() as { error?: string; code?: string };
+          message = error.error || error.code || message;
+        } catch {
+          // Keep generic message.
+        }
+        throw new Error(message);
+      }
+
+      return res.json() as Promise<ServerSnapshotReadResult>;
     } finally {
       cancel();
     }

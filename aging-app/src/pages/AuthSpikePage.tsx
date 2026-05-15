@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { apiClient, type ServerSnapshotUploadResult } from '../api/client';
-import { loadSnapshotFromStorage, snapshotFilename } from '../utils/snapshot';
+import { apiClient, type ServerSnapshotReadResult, type ServerSnapshotUploadResult } from '../api/client';
+import {
+  loadSnapshotFromStorage,
+  parseSnapshotText,
+  saveSnapshotToStorage,
+  snapshotFilename,
+} from '../utils/snapshot';
 
 const TENANT_ID = '16cca7b3-b733-44b6-a4a2-ad043eef5261';
 const CLIENT_ID = '903b01b4-6742-4378-830c-fef9f057517b';
@@ -194,6 +199,7 @@ export function AuthSpikePage() {
   const [apiBusy, setApiBusy] = useState(false);
   const [sharePointBusy, setSharePointBusy] = useState(false);
   const [snapshotUploadBusy, setSnapshotUploadBusy] = useState(false);
+  const [snapshotRestoreBusy, setSnapshotRestoreBusy] = useState(false);
   const [diagnosticsBusy, setDiagnosticsBusy] = useState(false);
   const [whoamiAttempted, setWhoamiAttempted] = useState(false);
   const [status, setStatus] = useState('C5 auth spike route mounted.');
@@ -202,6 +208,12 @@ export function AuthSpikePage() {
   const [roundTrip, setRoundTrip] = useState<SharePointRoundTripResult | null>(null);
   const [diagnostics, setDiagnostics] = useState<SharePointDiagnosticsResult | null>(null);
   const [snapshotUpload, setSnapshotUpload] = useState<ServerSnapshotUploadResult | null>(null);
+  const [snapshotRestore, setSnapshotRestore] = useState<{
+    result: ServerSnapshotReadResult;
+    saved: boolean;
+    transactionCount: number;
+    asOfDate: string;
+  } | null>(null);
 
   const search = useMemo(() => new URLSearchParams(window.location.search), []);
 
@@ -270,6 +282,7 @@ export function AuthSpikePage() {
     setRoundTrip(null);
     setDiagnostics(null);
     setSnapshotUpload(null);
+    setSnapshotRestore(null);
     setWhoamiAttempted(false);
     setError(null);
     setStatus('Signed out locally.');
@@ -298,6 +311,33 @@ export function AuthSpikePage() {
       setStatus('Server snapshot upload failed.');
     } finally {
       setSnapshotUploadBusy(false);
+    }
+  };
+
+  const restoreLatestServerSnapshot = async () => {
+    if (!token) return;
+    setSnapshotRestoreBusy(true);
+    setError(null);
+    setSnapshotRestore(null);
+    setStatus('Restoring latest server snapshot from SharePoint...');
+    try {
+      const result = await apiClient.restoreLatestServerSnapshot(token.accessToken);
+      const parsed = parseSnapshotText(JSON.stringify(result.snapshot));
+      const saved = saveSnapshotToStorage(parsed.snapshot);
+      setSnapshotRestore({
+        result,
+        saved,
+        transactionCount: parsed.snapshot.summary.transactionCount,
+        asOfDate: parsed.snapshot.summary.asOfDate,
+      });
+      setStatus(saved
+        ? 'Latest server snapshot restored to browser storage.'
+        : 'Latest server snapshot downloaded, but browser storage could not be updated.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Latest server snapshot restore failed.');
+      setStatus('Latest server snapshot restore failed.');
+    } finally {
+      setSnapshotRestoreBusy(false);
     }
   };
 
@@ -437,6 +477,9 @@ export function AuthSpikePage() {
             </button>
             <button type="button" className="btn" disabled={snapshotUploadBusy || !token} onClick={uploadC3Snapshot}>
               Upload C3 snapshot
+            </button>
+            <button type="button" className="btn" disabled={snapshotRestoreBusy || !token} onClick={restoreLatestServerSnapshot}>
+              Restore latest server snapshot
             </button>
           </div>
 
@@ -618,6 +661,46 @@ export function AuthSpikePage() {
                 <div>
                   <dt>SharePoint URL</dt>
                   <dd>{snapshotUpload.file.webUrl || '(not provided)'}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
+
+          {snapshotRestore && (
+            <div className="auth-spike-result">
+              <h2>Server snapshot restore</h2>
+              <dl>
+                <div>
+                  <dt>Status</dt>
+                  <dd>{snapshotRestore.result.status}</dd>
+                </div>
+                <div>
+                  <dt>Source</dt>
+                  <dd>{snapshotRestore.result.source}</dd>
+                </div>
+                <div>
+                  <dt>Filename</dt>
+                  <dd>{snapshotRestore.result.filename}</dd>
+                </div>
+                <div>
+                  <dt>Folder</dt>
+                  <dd>{snapshotRestore.result.folder}</dd>
+                </div>
+                <div>
+                  <dt>Transactions</dt>
+                  <dd>{snapshotRestore.transactionCount}</dd>
+                </div>
+                <div>
+                  <dt>As of date</dt>
+                  <dd>{snapshotRestore.asOfDate}</dd>
+                </div>
+                <div>
+                  <dt>Local storage saved</dt>
+                  <dd>{snapshotRestore.saved ? 'yes' : 'no'}</dd>
+                </div>
+                <div>
+                  <dt>SharePoint URL</dt>
+                  <dd>{snapshotRestore.result.file.webUrl || '(not provided)'}</dd>
                 </div>
               </dl>
             </div>
