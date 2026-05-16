@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient, loadC5AuthSpikeAccessToken } from '../api/client';
 import type { WorkflowItemFields } from '../api/client';
@@ -123,6 +123,9 @@ export function WorkflowQueuePage({ result, onBackToDashboard }: WorkflowQueuePa
   const [workflowItems, setWorkflowItems] = useState<Record<string, WorkflowItemFields>>({});
   const [status, setStatus] = useState('Workflow metadata not loaded.');
   const [isStale, setIsStale] = useState(false);
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+  const [drafts, setDrafts] = useState<Record<string, { memoText: string; promiseStatus: string }>>({});
+  const [actionStatus, setActionStatus] = useState<Record<string, { type: 'idle' | 'saving' | 'ok' | 'error'; message: string }>>({});
 
   const workspaceId = result?.uploadSession?.importBatchId ?? '';
   const report = useMemo(
@@ -252,6 +255,91 @@ export function WorkflowQueuePage({ result, onBackToDashboard }: WorkflowQueuePa
     setSearchParams(new URLSearchParams({ owner: 'all', due: 'all', status: 'active' }));
   }
 
+  function hydrateDraft(row: WorkflowQueueRow) {
+    setDrafts((current) => current[row.workflowKey] ? current : {
+      ...current,
+      [row.workflowKey]: {
+        memoText: row.workflow?.memoText ?? '',
+        promiseStatus: row.workflow?.promiseStatus || 'None',
+      },
+    });
+  }
+
+  function toggleActions(row: WorkflowQueueRow) {
+    hydrateDraft(row);
+    setExpandedKey((current) => current === row.workflowKey ? null : row.workflowKey);
+  }
+
+  function updateDraft(workflowKey: string, patch: Partial<{ memoText: string; promiseStatus: string }>) {
+    setDrafts((current) => ({
+      ...current,
+      [workflowKey]: {
+        memoText: current[workflowKey]?.memoText ?? '',
+        promiseStatus: current[workflowKey]?.promiseStatus ?? 'None',
+        ...patch,
+      },
+    }));
+  }
+
+  async function saveInlineAction(row: WorkflowQueueRow) {
+    if (!token) {
+      setActionStatus((current) => ({
+        ...current,
+        [row.workflowKey]: { type: 'error', message: 'Sign in on /spike/auth first.' },
+      }));
+      return;
+    }
+
+    const draft = drafts[row.workflowKey] ?? {
+      memoText: row.workflow?.memoText ?? '',
+      promiseStatus: row.workflow?.promiseStatus || 'None',
+    };
+
+    setActionStatus((current) => ({
+      ...current,
+      [row.workflowKey]: { type: 'saving', message: 'Saving to SharePoint...' },
+    }));
+
+    try {
+      const result = await apiClient.writeWorkflowItem({
+        workspaceId,
+        workflowKey: row.workflowKey,
+        partyKey: row.party.partyKey,
+        partyName: row.party.partyName,
+        currency: row.party.currency,
+        direction: row.party.direction,
+        ownerDisplayName: row.workflow?.ownerDisplayName ?? '',
+        memoText: draft.memoText,
+        promiseDate: row.workflow?.promiseDate ?? '',
+        promiseAmount: row.workflow?.promiseAmount ?? null,
+        promiseStatus: draft.promiseStatus === 'None' ? '' : draft.promiseStatus,
+      }, token);
+
+      if (result.item?.fields?.workflowKey) {
+        setWorkflowItems((current) => ({
+          ...current,
+          [result.item!.fields.workflowKey!]: {
+            ...row.workflow,
+            ...result.item!.fields,
+          },
+        }));
+      }
+
+      setActionStatus((current) => ({
+        ...current,
+        [row.workflowKey]: { type: 'ok', message: 'Saved to SharePoint.' },
+      }));
+    } catch (err) {
+      setActionStatus((current) => ({
+        ...current,
+        [row.workflowKey]: {
+          type: 'error',
+          message: err instanceof Error ? err.message : 'Workflow update failed.',
+        },
+      }));
+    }
+  }
+
   if (!result || !result.details) {
     return (
       <main className="app-content workflow-queue-page">
@@ -364,44 +452,101 @@ export function WorkflowQueuePage({ result, onBackToDashboard }: WorkflowQueuePa
           </thead>
           <tbody>
             {visibleRows.map((row) => (
-              <tr key={row.workflowKey}>
-                <td>
-                  <strong>{row.party.partyName}</strong>
-                  <div className="mono muted">{row.party.partyKey}</div>
-                  <div className="workflow-small-tags">
-                    <span>{row.tab}</span>
-                    <span>{row.party.statementStatus}</span>
-                    <span>{row.party.priorityBand}</span>
-                  </div>
-                </td>
-                <td>{row.workflow?.ownerDisplayName || <span className="muted">Unassigned</span>}</td>
-                <td>
-                  {row.hasPromise ? (
-                    <div className="workflow-promise-cell">
-                      {dateOnly(row.workflow?.promiseDate) && <strong>{dateOnly(row.workflow?.promiseDate)}</strong>}
-                      {row.workflow?.promiseAmount !== null && row.workflow?.promiseAmount !== undefined && (
-                        <span>{row.party.currency} {money(row.workflow.promiseAmount)}</span>
-                      )}
-                      {row.workflow?.promiseStatus && <span>{row.workflow.promiseStatus}</span>}
+              <Fragment key={row.workflowKey}>
+                <tr key={row.workflowKey}>
+                  <td>
+                    <strong>{row.party.partyName}</strong>
+                    <div className="mono muted">{row.party.partyKey}</div>
+                    <div className="workflow-small-tags">
+                      <span>{row.tab}</span>
+                      <span>{row.party.statementStatus}</span>
+                      <span>{row.party.priorityBand}</span>
                     </div>
-                  ) : (
-                    <span className="muted">No promise</span>
-                  )}
-                </td>
-                <td>{row.hasMemo ? <span className="workflow-memo-pill">Memo</span> : <span className="muted">-</span>}</td>
-                <td className="mono">{row.party.currency}</td>
-                <td>{directionLabel(row.party.direction)}</td>
-                <td className="num">{money(row.party.openAmount)}</td>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => navigate(`/party/${row.party.partyKey}`)}
-                  >
-                    Open Party
-                  </button>
-                </td>
-              </tr>
+                  </td>
+                  <td>{row.workflow?.ownerDisplayName || <span className="muted">Unassigned</span>}</td>
+                  <td>
+                    {row.hasPromise ? (
+                      <div className="workflow-promise-cell">
+                        {dateOnly(row.workflow?.promiseDate) && <strong>{dateOnly(row.workflow?.promiseDate)}</strong>}
+                        {row.workflow?.promiseAmount !== null && row.workflow?.promiseAmount !== undefined && (
+                          <span>{row.party.currency} {money(row.workflow.promiseAmount)}</span>
+                        )}
+                        {row.workflow?.promiseStatus && <span>{row.workflow.promiseStatus}</span>}
+                      </div>
+                    ) : (
+                      <span className="muted">No promise</span>
+                    )}
+                  </td>
+                  <td>{row.hasMemo ? <span className="workflow-memo-pill">Memo</span> : <span className="muted">-</span>}</td>
+                  <td className="mono">{row.party.currency}</td>
+                  <td>{directionLabel(row.party.direction)}</td>
+                  <td className="num">{money(row.party.openAmount)}</td>
+                  <td>
+                    <div className="workflow-row-actions">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => toggleActions(row)}
+                      >
+                        Actions
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => navigate(`/party/${row.party.partyKey}`)}
+                      >
+                        Open Party
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {expandedKey === row.workflowKey && (
+                  <tr key={`${row.workflowKey}-actions`}>
+                    <td colSpan={8}>
+                      <div className="workflow-inline-panel">
+                        <div className="workflow-inline-panel-head">
+                          <strong>Inline Actions Lite</strong>
+                          <span>{actionStatus[row.workflowKey]?.message ?? 'Quick memo and promise status only.'}</span>
+                        </div>
+                        <div className="workflow-inline-grid">
+                          <label>
+                            <span>Quick memo</span>
+                            <textarea
+                              value={drafts[row.workflowKey]?.memoText ?? row.workflow?.memoText ?? ''}
+                              onChange={(event) => updateDraft(row.workflowKey, { memoText: event.target.value })}
+                              rows={4}
+                            />
+                          </label>
+                          <label>
+                            <span>Promise status</span>
+                            <select
+                              value={drafts[row.workflowKey]?.promiseStatus ?? (row.workflow?.promiseStatus || 'None')}
+                              onChange={(event) => updateDraft(row.workflowKey, { promiseStatus: event.target.value })}
+                            >
+                              {['None', 'Open', 'FollowUp', 'Kept', 'Broken', 'Settled'].map((value) => (
+                                <option key={value} value={value}>{value}</option>
+                              ))}
+                            </select>
+                          </label>
+                        </div>
+                        {actionStatus[row.workflowKey]?.type === 'error' && (
+                          <div className="workflow-inline-error">{actionStatus[row.workflowKey].message}</div>
+                        )}
+                        <div className="workflow-inline-actions">
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            disabled={actionStatus[row.workflowKey]?.type === 'saving'}
+                            onClick={() => saveInlineAction(row)}
+                          >
+                            Save inline updates
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
             {visibleRows.length === 0 && (
               <tr>

@@ -47,7 +47,7 @@ check('page computes dueBucket', page.includes('function dueBucket'));
 check('page defaults owner filter to all', page.includes("searchParams.get('owner'), ['me', 'unassigned', 'all'] as const, 'all'"));
 check('page keeps read-only action as Open Party', page.includes('Open Party'));
 check('page has stale cache indicator', page.includes('Stale cache'));
-check('page has no workflow write call', !page.includes('writeWorkflowItem'));
+check('page keeps workflow writes scoped to C13 action panel', page.includes('Inline Actions Lite') || !page.includes('writeWorkflowItem'));
 
 check('CSS defines workflow queue page', css.includes('.workflow-queue-page'));
 check('CSS defines workflow filter panel', css.includes('.workflow-filter-panel'));
