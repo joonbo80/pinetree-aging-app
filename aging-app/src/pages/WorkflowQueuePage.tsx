@@ -136,7 +136,7 @@ export function WorkflowQueuePage({ result, onBackToDashboard }: WorkflowQueuePa
     return payload.name ?? payload.preferred_username ?? '';
   }, [token]);
 
-  const ownerFilter = filterValue(searchParams.get('owner'), ['me', 'unassigned', 'all'] as const, 'me');
+  const ownerFilter = filterValue(searchParams.get('owner'), ['me', 'unassigned', 'all'] as const, 'all');
   const dueFilter = filterValue(
     searchParams.get('due'),
     ['overdue', 'today', 'thisWeek', 'hasPromise', 'noPromise', 'all'] as const,
@@ -249,7 +249,7 @@ export function WorkflowQueuePage({ result, onBackToDashboard }: WorkflowQueuePa
   }
 
   function resetFilters() {
-    setSearchParams(new URLSearchParams({ owner: 'me', due: 'all', status: 'active' }));
+    setSearchParams(new URLSearchParams({ owner: 'all', due: 'all', status: 'active' }));
   }
 
   if (!result || !result.details) {

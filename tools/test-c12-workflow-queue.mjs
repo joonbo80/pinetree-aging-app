@@ -44,7 +44,7 @@ check('page reads SharePoint workflow items', page.includes('readWorkflowItems')
 check('page uses C5 auth token', page.includes('loadC5AuthSpikeAccessToken'));
 check('page builds workflowKey with party/currency/direction', page.includes('${workspaceId}__${row.partyKey}__${row.currency}__${row.direction}'));
 check('page computes dueBucket', page.includes('function dueBucket'));
-check('page defaults owner filter to me', page.includes("'me'"));
+check('page defaults owner filter to all', page.includes("searchParams.get('owner'), ['me', 'unassigned', 'all'] as const, 'all'"));
 check('page keeps read-only action as Open Party', page.includes('Open Party'));
 check('page has stale cache indicator', page.includes('Stale cache'));
 check('page has no workflow write call', !page.includes('writeWorkflowItem'));
