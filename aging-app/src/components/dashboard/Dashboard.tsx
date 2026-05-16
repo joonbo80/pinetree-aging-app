@@ -12,6 +12,7 @@ interface DashboardProps {
   onOpenReviewCategory: (category: ReviewRoute) => void;
   onOpenParty?: (partyKey: string) => void;
   onOpenAging?: () => void;
+  onOpenWorkflow?: () => void;
   detailsNotice?: string | null;
 }
 
@@ -44,6 +45,7 @@ export function Dashboard({
   onOpenReviewCategory,
   onOpenParty,
   onOpenAging,
+  onOpenWorkflow,
   detailsNotice,
 }: DashboardProps) {
   if (!result) {
@@ -154,6 +156,20 @@ export function Dashboard({
           </div>
           <button type="button" className="btn btn-primary" onClick={onOpenAging}>
             Open Collection Workbench
+          </button>
+        </div>
+      )}
+
+      {onOpenWorkflow && (
+        <div className="dashboard-workbench-cta">
+          <div>
+            <span className="dashboard-workbench-cta-title">Workflow Queue</span>
+            <span className="dashboard-workbench-cta-hint">
+              Read-only daily queue from SharePoint owner, memo, and promise metadata.
+            </span>
+          </div>
+          <button type="button" className="btn btn-secondary" onClick={onOpenWorkflow}>
+            Open Workflow Queue
           </button>
         </div>
       )}

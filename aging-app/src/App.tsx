@@ -21,6 +21,7 @@ import { ReviewQueuePage } from './components/review/ReviewQueuePage';
 import { PartyDetailPage } from './components/party/PartyDetailPage';
 import { AgingReportPage } from './pages/AgingReportPage';
 import { AuthSpikePage } from './pages/AuthSpikePage';
+import { WorkflowQueuePage } from './pages/WorkflowQueuePage';
 import {
   buildAgingSnapshot,
   clearSnapshotStorage,
@@ -286,6 +287,7 @@ export default function App() {
               onOpenReviewCategory={openReviewRoute}
               onOpenParty={(partyKey) => navigate(`/party/${partyKey}`)}
               onOpenAging={() => navigate('/aging')}
+              onOpenWorkflow={() => navigate('/workflow')}
               detailsNotice={detailsNotice}
             />
           )}
@@ -294,6 +296,7 @@ export default function App() {
         <Route path="/review/:type" element={<ReviewQueuePage result={result} />} />
         <Route path="/party/:partyKey" element={<PartyDetailPage result={result} />} />
         <Route path="/aging" element={<AgingReportPage result={result} onBackToDashboard={() => navigate('/dashboard')} />} />
+        <Route path="/workflow" element={<WorkflowQueuePage result={result} onBackToDashboard={() => navigate('/dashboard')} />} />
         <Route path="/spike/auth" element={<AuthSpikePage />} />
         <Route path="/" element={<main className="app-content">
         <div className="app-subtitle">{t.appSubtitle}</div>
