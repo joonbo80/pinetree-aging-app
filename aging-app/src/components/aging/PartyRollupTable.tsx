@@ -52,6 +52,10 @@ function signedMoney(value: number, currency: string) {
   return `${currency} ${sign}${money(Math.abs(value))}`;
 }
 
+function dateOnly(value: string) {
+  return value.includes('T') ? value.slice(0, 10) : value;
+}
+
 function rollupId(row: PartyRollup) {
   return `${row.partyKey}__${row.currency}__${row.direction}`;
 }
@@ -146,7 +150,7 @@ export function PartyRollupTable({ tabId, data, workspaceId }: PartyRollupTableP
           next[key] = {
             ownerDisplayName: item.fields.ownerDisplayName ?? '',
             memoText: item.fields.memoText ?? '',
-            promiseDate: item.fields.promiseDate ?? '',
+            promiseDate: dateOnly(item.fields.promiseDate ?? ''),
             promiseAmount: item.fields.promiseAmount ?? null,
             promiseStatus: item.fields.promiseStatus ?? '',
           };
@@ -359,7 +363,7 @@ function workflowKey(row: PartyRollup, workspaceId: string) {
 
 function promiseBadgeLabel(summary: WorkflowMetadataSummary) {
   if (summary.promiseDate) {
-    return `Promise: ${summary.promiseDate}`;
+    return `Promise: ${dateOnly(summary.promiseDate)}`;
   }
   if (summary.promiseStatus) {
     return `Promise: ${summary.promiseStatus}`;
@@ -391,7 +395,7 @@ function emailBody(row: PartyRollup, summary: WorkflowMetadataSummary) {
 
   if (summary.promiseDate || summary.promiseAmount !== null || summary.promiseStatus) {
     lines.push('', 'Promise tracking:');
-    if (summary.promiseDate) lines.push(`- Date: ${summary.promiseDate}`);
+    if (summary.promiseDate) lines.push(`- Date: ${dateOnly(summary.promiseDate)}`);
     if (summary.promiseAmount !== null) lines.push(`- Amount: ${signedMoney(summary.promiseAmount, row.currency)}`);
     if (summary.promiseStatus) lines.push(`- Status: ${summary.promiseStatus}`);
   }
@@ -449,7 +453,7 @@ function WorkflowLitePanel({
         if (cancelled) return;
         const nextOwner = result.item?.fields.ownerDisplayName ?? '';
         const nextMemo = result.item?.fields.memoText ?? '';
-        const nextPromiseDate = result.item?.fields.promiseDate ?? '';
+        const nextPromiseDate = dateOnly(result.item?.fields.promiseDate ?? '');
         const nextPromiseAmount = result.item?.fields.promiseAmount ?? null;
         const nextPromiseStatus = result.item?.fields.promiseStatus ?? '';
         setOwner(nextOwner);
@@ -499,7 +503,7 @@ function WorkflowLitePanel({
       }, token);
       const nextOwner = result.item?.fields.ownerDisplayName ?? owner;
       const nextMemo = result.item?.fields.memoText ?? memo;
-      const nextPromiseDate = result.item?.fields.promiseDate ?? promiseDate;
+      const nextPromiseDate = dateOnly(result.item?.fields.promiseDate ?? promiseDate);
       const nextPromiseAmount = result.item?.fields.promiseAmount ?? (promiseAmount.trim() ? Number(promiseAmount) : null);
       const nextPromiseStatus = result.item?.fields.promiseStatus ?? promiseStatus;
       setOwner(nextOwner);
